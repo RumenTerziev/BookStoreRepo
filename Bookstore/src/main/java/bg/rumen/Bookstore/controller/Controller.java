@@ -2,20 +2,30 @@ package bg.rumen.Bookstore.controller;
 
 
 import bg.rumen.Bookstore.models.Book;
+import bg.rumen.Bookstore.models.Comment;
 import bg.rumen.Bookstore.repository.BookRepository;
+import bg.rumen.Bookstore.repository.CommentsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
+import static bg.rumen.Bookstore.qualifiers.BeanQualifiers.*;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/bookstore")
 public class Controller {
 
     @Autowired
-    @Qualifier("getRepo")
+    @Qualifier(BOOK_REPO)
     private BookRepository bookRepository;
+
+
+
+    @Autowired
+    @Qualifier(COMMENTS_REPO)
+    private CommentsRepository commentsRepository;
 
 
     @GetMapping
@@ -42,6 +52,19 @@ public class Controller {
     public List<Book> deleteBook(@PathVariable String name) {
         this.bookRepository.deleteBookByTitle(name);
         return this.bookRepository.getBooks();
+    }
+
+
+    @GetMapping("/{title}")
+    public List<String> getComments(@PathVariable String title) {
+        return this.commentsRepository.getCommentsByTitle(title);
+    }
+
+
+    @PostMapping("/{title}")
+    public List<String> addComment(@PathVariable String title, @RequestBody Comment comment) {
+        this.commentsRepository.addComment(comment);
+        return this.commentsRepository.getCommentsByTitle(title);
     }
 
 }

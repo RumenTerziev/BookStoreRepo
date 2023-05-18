@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static bg.rumen.Bookstore.qualifiers.BeanQualifiers.*;
+
 @Configuration
 public class BookFactory {
 
     @Bean
-    @Qualifier("gotBook")
+    @Qualifier(GAME_OF_THRONES_BOOK)
     public Book gotBook() {
         Book book = new Book();
         book.setTitle("Game Of Thrones");
@@ -19,7 +21,7 @@ public class BookFactory {
 
 
     @Bean
-    @Qualifier("harryBook")
+    @Qualifier(HARRY_POTTER_BOOK)
     public Book harryBook() {
         Book book = new Book();
         book.setTitle("Harry Potter");

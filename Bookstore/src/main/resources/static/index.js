@@ -179,6 +179,121 @@ function attachEvents() {
 
     }
 
+    let searchedTr;
+
+    function commentsHandler() {
+
+        let tdForm = document.createElement('td');
+        tdForm.id = "tdContainerForm";
+        let form = document.createElement('form');
+        let inputComment = document.createElement('input');
+        inputComment.type = "text";
+
+
+        searchedTr = this.parentNode.parentNode;
+
+        let submitComment = document.createElement('button');
+        submitComment.textContent = "Submit Comment";
+        submitComment.addEventListener('click', submitCommentHandler);
+        form.appendChild(inputComment);
+        form.appendChild(submitComment);
+        tdForm.appendChild(form);
+        searchedTr.appendChild(tdForm);
+
+
+        let td = searchedTr.getElementsByTagName('td')[0];
+        let name = td.textContent;
+
+        loadComments(name);
+
+        this.setAttribute('disabled', true);
+
+    }
+
+    function submitCommentHandler(event) {
+
+        if (event) {
+            event.preventDefault();
+        }
+
+        searchedTr = this.parentNode.parentNode.parentNode;
+        let td = searchedTr.getElementsByTagName('td')[0];
+        let name = td.textContent;
+        let input = searchedTr.getElementsByTagName('td')[3].getElementsByTagName('input')[0];
+
+        if (input.value === '') {
+            return;
+        }
+
+        let payload = JSON.stringify({
+            bookTitle: name,
+            comment: input.value
+        });
+
+
+        let reqOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: payload
+        }
+        let lastTd = searchedTr.getElementsByTagName('td')[4];
+
+
+        fetch(`${BASE_URL}/${name}`, reqOptions)
+            .then((resp) => resp.json())
+            .then(() => {
+               lastTd.remove();
+                loadComments(name);
+                input.value = '';
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    }
+
+
+    function loadComments(name) {
+        let tdComments = document.createElement('td');
+        let ul = document.createElement('ul');
+        let span = document.createElement('span');
+
+        let reqOptions = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+
+        fetch(`${BASE_URL}/${name}`, reqOptions)
+            .then((resp) => resp.json())
+            .then((data) => {
+
+
+                if (data == null) {
+                   span.textContent = 'No comments to show!';
+                } else {
+                    if (span) {
+                        span.style.display = 'hidden';
+                    }
+                    for (const current of data) {
+                        let li = document.createElement('li');
+                        li.textContent = current;
+                        ul.appendChild(li);
+                    }
+                    tdComments.appendChild(ul);
+                    if (searchedTr) {
+                        searchedTr.appendChild(tdComments);
+                    }
+                }
+
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+
+    }
 
     function createTableRow(title, author) {
         let tr = document.createElement('tr');
@@ -191,10 +306,14 @@ function attachEvents() {
         let deleteButton = document.createElement('button');
         editButton.textContent = 'Edit';
         deleteButton.textContent = 'Delete';
+        let commentsButton = document.createElement('button');
+        commentsButton.textContent = 'Comments';
+        commentsButton.addEventListener('click', commentsHandler);
         editButton.addEventListener('click', editHandler);
         deleteButton.addEventListener('click', deleteHandler);
         tdButtons.appendChild(editButton);
         tdButtons.appendChild(deleteButton);
+        tdButtons.appendChild(commentsButton);
         tr.appendChild(tdTitle);
         tr.appendChild(tdAuthor);
         tr.appendChild(tdButtons);
