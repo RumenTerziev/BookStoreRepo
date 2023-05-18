@@ -79,14 +79,6 @@ label, input{
     margin: 0 auto;
 }
 
-#tdContainerForm {
-    display: flex;
-    flex-direction: column;
-    align-content: space-between;
-    gap: 10px;
-
-}
-
 #form input{
     margin-bottom: 1%;
     width: 25%;
