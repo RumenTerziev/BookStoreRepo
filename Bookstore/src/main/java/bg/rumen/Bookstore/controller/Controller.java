@@ -16,11 +16,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/bookstore")
 public class Controller {
+    private Integer newID = 3;
 
     @Autowired
-    @Qualifier(BOOK_REPO)
     private BookRepository bookRepository;
-
 
 
     @Autowired
@@ -35,36 +34,45 @@ public class Controller {
 
     @PostMapping
     public List<Book> addBook(@RequestBody Book book) {
+        book.setId(newID);
+        newID++;
         this.bookRepository.addBook(book);
         return this.bookRepository.getBooks();
     }
 
 
-    @PatchMapping("/{name}")
-    public List<Book> updateBook(@RequestBody Book book, @PathVariable String name) {
-        this.bookRepository.deleteBookByTitle(name);
+    @PatchMapping("/{id}")
+    public List<Book> updateBook(@RequestBody Book book, @PathVariable Integer id) {
+        this.bookRepository.deleteBookById(id);
         this.bookRepository.addBook(book);
         return this.bookRepository.getBooks();
     }
 
 
-    @DeleteMapping("/{name}")
-    public List<Book> deleteBook(@PathVariable String name) {
-        this.bookRepository.deleteBookByTitle(name);
+    @DeleteMapping("/{id}")
+    public List<Book> deleteBook(@PathVariable Integer id) {
+        this.bookRepository.deleteBookById(id);
         return this.bookRepository.getBooks();
     }
 
 
-    @GetMapping("/{title}")
-    public List<String> getComments(@PathVariable String title) {
-        return this.commentsRepository.getCommentsByTitle(title);
+    @GetMapping("/{id}")
+    public List<String> getComments(@PathVariable Integer id) {
+        return this.commentsRepository.getCommentsById(id);
     }
 
 
-    @PostMapping("/{title}")
-    public List<String> addComment(@PathVariable String title, @RequestBody Comment comment) {
+    @PostMapping("/{id}")
+    public List<String> addComment(@PathVariable Integer id, @RequestBody Comment comment) {
+        comment.setBookId(id);
         this.commentsRepository.addComment(comment);
-        return this.commentsRepository.getCommentsByTitle(title);
+        return this.commentsRepository.getCommentsById(id);
     }
+
+
+//    @GetMapping("/{title}")
+//    public Book getBookByTitle(@PathVariable String title) {
+//        return this.bookRepository.getBookByTitle(title);
+//    }
 
 }

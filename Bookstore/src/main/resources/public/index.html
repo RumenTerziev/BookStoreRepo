@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Books</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <button id="loadBooks">LOAD ALL BOOKS</button>
+
+<div class="search-container">
+        <input type="search" id="search-input" name="Search">
+        <button id="search-button">Search Book</button>
+</div>
+
 <table>
     <thead>
     <tr>
@@ -45,6 +51,6 @@
     <input type="text" name="author" placeholder="Author...">
     <button>Submit</button>
 </div>
-<script src="/index.js"></script>
+<script src="/static/index.js"></script>
 </body>
 </html>

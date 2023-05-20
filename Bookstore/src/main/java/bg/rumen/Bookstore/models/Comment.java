@@ -1,16 +1,13 @@
 package bg.rumen.Bookstore.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class Comment {
-    private String bookTitle;
+    private Integer bookId;
     private String comment;
-
-    public Comment(String bookTitle, String comment) {
-        this.bookTitle = bookTitle;
-        this.comment = comment;
-    }
 }

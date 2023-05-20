@@ -1,11 +1,16 @@
 package bg.rumen.Bookstore.repository;
 
 import bg.rumen.Bookstore.models.Book;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class BookRepository {
+
+    @Autowired
     private List<Book> books;
 
     public BookRepository() {
@@ -25,7 +30,7 @@ public class BookRepository {
     }
 
 
-    public void deleteBookByTitle(String title) {
-        this.books.removeIf(b -> b.getTitle().equals(title));
+    public void deleteBookById(Integer id) {
+        this.books.removeIf(b -> b.getId().equals(id));
     }
 }

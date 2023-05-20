@@ -32,9 +32,9 @@ function attachEvents() {
                 allDomElements.tbody.innerHTML = '';
 
                 for (const current of data) {
-                    let {title, author} = current;
+                    let {title, author, id} = current;
                     let tr = createTableRow(title, author);
-                    tr.id = title;
+                    tr.id = id;
                     allDomElements.tbody.appendChild(tr);
                 }
 
@@ -125,7 +125,8 @@ function attachEvents() {
 
         let payload = JSON.stringify({
             title: newDomElements.titleInput.value,
-            author: newDomElements.authorInput.value
+            author: newDomElements.authorInput.value,
+            id: searchedId
         });
 
         let requestOptions = {
@@ -158,28 +159,27 @@ function attachEvents() {
 
 
     function deleteHandler(event) {
+
         let searchedTr = this.parentNode.parentNode;
-        let td = searchedTr.getElementsByTagName('td')[0];
-        let name = td.textContent;
+        let searchedId = searchedTr.id;
 
         let requestOptions = {
             method: "DELETE",
         };
 
 
-        fetch(`${BASE_URL}/${name}`, requestOptions)
+        fetch(`${BASE_URL}/${searchedId}`, requestOptions)
             .then((resp) => resp.json())
             .then(() => {
-                loadHandler(event);
+                loadHandler();
             })
             .catch((err) => {
                 console.error(err);
             });
 
-
     }
 
-    let searchedTr;
+
 
     function commentsHandler() {
 
@@ -190,7 +190,8 @@ function attachEvents() {
         inputComment.type = "text";
 
 
-        searchedTr = this.parentNode.parentNode;
+        let searchedTr = this.parentNode.parentNode;
+        let id = searchedTr.id;
 
         let submitComment = document.createElement('button');
         submitComment.textContent = "Submit Comment";
@@ -201,10 +202,7 @@ function attachEvents() {
         searchedTr.appendChild(tdForm);
 
 
-        let td = searchedTr.getElementsByTagName('td')[0];
-        let name = td.textContent;
-
-        loadComments(name);
+        loadComments(id);
 
         this.setAttribute('disabled', true);
 
@@ -216,7 +214,8 @@ function attachEvents() {
             event.preventDefault();
         }
 
-        searchedTr = this.parentNode.parentNode.parentNode;
+        let searchedTr = this.parentNode.parentNode.parentNode;
+        let searchedId = searchedTr.id;
         let td = searchedTr.getElementsByTagName('td')[0];
         let name = td.textContent;
         let input = searchedTr.getElementsByTagName('td')[3].getElementsByTagName('input')[0];
@@ -241,11 +240,11 @@ function attachEvents() {
         let lastTd = searchedTr.getElementsByTagName('td')[4];
 
 
-        fetch(`${BASE_URL}/${name}`, reqOptions)
+        fetch(`${BASE_URL}/${searchedId}`, reqOptions)
             .then((resp) => resp.json())
             .then(() => {
-               lastTd.remove();
-                loadComments(name);
+                lastTd.remove();
+                loadComments(searchedId);
                 input.value = '';
             })
             .catch((err) => {
@@ -254,10 +253,14 @@ function attachEvents() {
     }
 
 
-    function loadComments(name) {
+    function loadComments(id) {
         let tdComments = document.createElement('td');
         let ul = document.createElement('ul');
         let span = document.createElement('span');
+
+        let allTrs = Array.from(document.getElementsByTagName('tr'));
+        let searchedTr = allTrs.find(tr => tr.id ===id);
+
 
         let reqOptions = {
             method: "GET",
@@ -266,27 +269,22 @@ function attachEvents() {
             }
         }
 
-        fetch(`${BASE_URL}/${name}`, reqOptions)
+        fetch(`${BASE_URL}/${id}`, reqOptions)
             .then((resp) => resp.json())
             .then((data) => {
 
-
-                if (data == null) {
-                   span.textContent = 'No comments to show!';
+                if (data.length === 0) {
+                    span.textContent = 'No comments to show!';
+                    ul.appendChild(span);
                 } else {
-                    if (span) {
-                        span.style.display = 'hidden';
-                    }
                     for (const current of data) {
                         let li = document.createElement('li');
                         li.textContent = current;
                         ul.appendChild(li);
                     }
-                    tdComments.appendChild(ul);
-                    if (searchedTr) {
-                        searchedTr.appendChild(tdComments);
-                    }
                 }
+                tdComments.appendChild(ul);
+                searchedTr.appendChild(tdComments);
 
             })
             .catch((error) => {
@@ -319,5 +317,4 @@ function attachEvents() {
         tr.appendChild(tdButtons);
         return tr;
     }
-
 }
