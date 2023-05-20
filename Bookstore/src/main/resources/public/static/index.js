@@ -2,11 +2,15 @@ window.addEventListener('load', attachEvents)
 
 function attachEvents() {
     const BASE_URL = '/api/bookstore';
+    const COMMENTS_URL = '/api/bookstore/comments';
 
     const allDomElements = {
         loadButton: document.getElementById('loadBooks'),
+        table: document.getElementsByTagName('table')[0],
         tbody: document.getElementsByTagName('tbody')[0],
-        form: document.getElementById('form')
+        form: document.getElementById('form'),
+        searchInput: document.getElementById('search-input'),
+        searchButton: document.getElementById('search-button')
     }
     const newDomElements = {
         formTitle: allDomElements.form.children[0],
@@ -15,15 +19,18 @@ function attachEvents() {
         submitButton: allDomElements.form.children[5],
     }
 
-    newDomElements.submitButton.addEventListener('click', createHandler);
-
     allDomElements.loadButton.addEventListener('click', loadHandler);
+    allDomElements.searchButton.addEventListener('click', searchHandler);
+    newDomElements.submitButton.addEventListener('click', createHandler);
+    allDomElements.searchButton.setAttribute('disabled', 'true');
 
     function loadHandler(event) {
 
         if (event) {
             event.preventDefault();
         }
+
+        allDomElements.searchButton.removeAttribute('disabled');
 
         fetch(BASE_URL)
             .then((resp) => resp.json())
@@ -121,7 +128,11 @@ function attachEvents() {
     }
 
 
-    function saveHandler() {
+    function saveHandler(event) {
+
+        if (event) {
+            event.preventDefault();
+        }
 
         let payload = JSON.stringify({
             title: newDomElements.titleInput.value,
@@ -159,6 +170,10 @@ function attachEvents() {
 
 
     function deleteHandler(event) {
+
+        if (event) {
+            event.preventDefault();
+        }
 
         let searchedTr = this.parentNode.parentNode;
         let searchedId = searchedTr.id;
@@ -240,7 +255,7 @@ function attachEvents() {
         let lastTd = searchedTr.getElementsByTagName('td')[4];
 
 
-        fetch(`${BASE_URL}/${searchedId}`, reqOptions)
+        fetch(`${COMMENTS_URL}/${searchedId}`, reqOptions)
             .then((resp) => resp.json())
             .then(() => {
                 lastTd.remove();
@@ -253,7 +268,10 @@ function attachEvents() {
     }
 
 
-    function loadComments(id) {
+    function loadComments(id, event) {
+        if (event) {
+            event.preventDefault();
+        }
         let tdComments = document.createElement('td');
         let ul = document.createElement('ul');
         let span = document.createElement('span');
@@ -269,7 +287,7 @@ function attachEvents() {
             }
         }
 
-        fetch(`${BASE_URL}/${id}`, reqOptions)
+        fetch(`${COMMENTS_URL}/${id}`, reqOptions)
             .then((resp) => resp.json())
             .then((data) => {
 
@@ -279,7 +297,7 @@ function attachEvents() {
                 } else {
                     for (const current of data) {
                         let li = document.createElement('li');
-                        li.textContent = current;
+                        li.textContent = current.comment;
                         ul.appendChild(li);
                     }
                 }
@@ -292,6 +310,55 @@ function attachEvents() {
             });
 
     }
+
+
+    function searchHandler(event) {
+
+        if (allDomElements.searchInput.value === '') {
+            return;
+        }
+
+        let name = allDomElements.searchInput.value;
+
+        if (event) {
+            event.preventDefault();
+        }
+
+
+        let requestOptions = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+
+
+        fetch(`${BASE_URL}/${name}`, requestOptions)
+            .then((resp) => resp.json())
+            .then((data) => {
+
+                if (data === null) {
+                    allDomElements.tbody.innerHTML = '';
+                    let tr = document.createElement('tr');
+                    let td = document.createElement('td');
+                    let span = document.createElement('span');
+                    span.textContent = 'No matches found!';
+                    td.appendChild(span);
+                    tr.appendChild(td);
+                    allDomElements.tbody.appendChild(tr);
+                } else {
+
+                    let copyRef = document.getElementById(data.id);
+                    allDomElements.tbody.innerHTML = '';
+                    allDomElements.tbody.appendChild(copyRef);
+                    allDomElements.searchInput.value = '';
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
 
     function createTableRow(title, author) {
         let tr = document.createElement('tr');

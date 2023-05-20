@@ -1,6 +1,6 @@
 package bg.rumen.Bookstore.config;
 
-import bg.rumen.Bookstore.repository.CommentsRepository;
+import bg.rumen.Bookstore.repository.InMemCommentRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ public class CommentsRepoFactory {
 
     @Bean
     @Qualifier(COMMENTS_REPO)
-    public CommentsRepository commentsRepository() {
-        return new CommentsRepository();
+    public InMemCommentRepository commentsRepository() {
+        return new InMemCommentRepository();
     }
 }

@@ -1,24 +1,27 @@
 package bg.rumen.Bookstore.repository;
 
+import bg.rumen.Bookstore.interfaces.CommentRepository;
 import bg.rumen.Bookstore.models.Comment;
 
 import java.util.*;
 
-public class CommentsRepository {
-    Map<Integer, List<String>> comments;
+public class InMemCommentRepository implements CommentRepository {
+    Map<Integer, List<Comment>> comments;
 
-    public CommentsRepository() {
+    public InMemCommentRepository() {
         this.comments = new LinkedHashMap<>();
     }
 
 
+    @Override
     public void addComment(Comment comment) {
         this.comments.putIfAbsent(comment.getBookId(), new ArrayList<>());
-        this.comments.get(comment.getBookId()).add(comment.getComment());
+        this.comments.get(comment.getBookId()).add(comment);
     }
 
 
-    public List<String> getCommentsById(Integer id) {
+    @Override
+    public List<Comment> getCommentsById(Integer id) {
         if (!this.comments.containsKey(id)) {
             return new ArrayList<>();
         }

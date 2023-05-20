@@ -1,10 +1,10 @@
 package bg.rumen.Bookstore.controller;
 
 
+import bg.rumen.Bookstore.interfaces.BookRepository;
+import bg.rumen.Bookstore.interfaces.CommentRepository;
 import bg.rumen.Bookstore.models.Book;
 import bg.rumen.Bookstore.models.Comment;
-import bg.rumen.Bookstore.repository.BookRepository;
-import bg.rumen.Bookstore.repository.CommentsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/bookstore")
 public class Controller {
-    private Integer newID = 3;
 
     @Autowired
     private BookRepository bookRepository;
@@ -24,7 +23,7 @@ public class Controller {
 
     @Autowired
     @Qualifier(COMMENTS_REPO)
-    private CommentsRepository commentsRepository;
+    private CommentRepository commentsRepository;
 
 
     @GetMapping
@@ -34,8 +33,6 @@ public class Controller {
 
     @PostMapping
     public List<Book> addBook(@RequestBody Book book) {
-        book.setId(newID);
-        newID++;
         this.bookRepository.addBook(book);
         return this.bookRepository.getBooks();
     }
@@ -43,8 +40,7 @@ public class Controller {
 
     @PatchMapping("/{id}")
     public List<Book> updateBook(@RequestBody Book book, @PathVariable Integer id) {
-        this.bookRepository.deleteBookById(id);
-        this.bookRepository.addBook(book);
+        this.bookRepository.editBook(book, id);
         return this.bookRepository.getBooks();
     }
 
@@ -56,23 +52,23 @@ public class Controller {
     }
 
 
-    @GetMapping("/{id}")
-    public List<String> getComments(@PathVariable Integer id) {
+    @GetMapping("/comments/{id}")
+    public List<Comment> getComments(@PathVariable Integer id) {
         return this.commentsRepository.getCommentsById(id);
     }
 
 
-    @PostMapping("/{id}")
-    public List<String> addComment(@PathVariable Integer id, @RequestBody Comment comment) {
+    @PostMapping("/comments/{id}")
+    public List<Comment> addComment(@PathVariable Integer id, @RequestBody Comment comment) {
         comment.setBookId(id);
         this.commentsRepository.addComment(comment);
         return this.commentsRepository.getCommentsById(id);
     }
 
 
-//    @GetMapping("/{title}")
-//    public Book getBookByTitle(@PathVariable String title) {
-//        return this.bookRepository.getBookByTitle(title);
-//    }
+    @GetMapping("/{title}")
+    public Book getBookByTitle(@PathVariable String title) {
+        return this.bookRepository.getBookByTitle(title);
+    }
 
 }
