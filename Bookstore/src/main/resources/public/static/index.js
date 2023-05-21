@@ -82,7 +82,6 @@ function attachEvents() {
 
 
         fetch(BASE_URL, requestOptions)
-            .then((resp) => resp.json())
             .then(() => {
                 loadHandler(event);
                 newDomElements.authorInput.value = '';
@@ -149,7 +148,6 @@ function attachEvents() {
         };
 
         fetch(`${BASE_URL}/${searchedId}`, requestOptions)
-            .then((resp) => resp.json())
             .then(() => {
                 loadHandler();
                 newDomElements.titleInput.value = '';
@@ -184,7 +182,6 @@ function attachEvents() {
 
 
         fetch(`${BASE_URL}/${searchedId}`, requestOptions)
-            .then((resp) => resp.json())
             .then(() => {
                 loadHandler();
             })
@@ -255,7 +252,6 @@ function attachEvents() {
 
 
         fetch(`${COMMENTS_URL}/${searchedId}`, reqOptions)
-            .then((resp) => resp.json())
             .then(() => {
                 lastTd.remove();
                 loadComments(searchedId);
@@ -294,9 +290,10 @@ function attachEvents() {
                     span.textContent = 'No comments to show!';
                     ul.appendChild(span);
                 } else {
+
                     for (const current of data) {
                         let {bookId, comment, commentId} = current;
-                        ul.id = bookId;
+                        searchedTr.id = bookId;
                         let li = document.createElement('li');
                         li.textContent = comment;
                         li.id = commentId;
@@ -319,18 +316,9 @@ function attachEvents() {
 
     function deleteCommentHandler() {
 
-        let searchedUl;
         let commentId = this.parentNode.id;
-        console.log(this.parentNode.parentNode);
-        let uls = Array.from(document.getElementsByTagName('ul'));
-        for (const ul of uls) {
-            let id = ul.id;
-            if (id) {
-                searchedUl = ul;
-            }
-        }
-        let td = searchedUl.parentNode;
-        let bookId = searchedUl.id;
+        let td = this.parentNode.parentNode.parentNode;
+        let bookId = td.parentNode.id;
 
         let requestOptions = {
             method: "DELETE",
@@ -340,9 +328,9 @@ function attachEvents() {
         };
 
 
-        fetch(`${COMMENTS_URL}/${bookId}/${commentId}`, requestOptions)
+        fetch(`${COMMENTS_URL}/${commentId}`, requestOptions)
             .then(() => {
-                td.innerHTML = '';
+                td.remove();
                 loadComments(bookId);
             })
             .catch((err) => {
@@ -351,7 +339,7 @@ function attachEvents() {
 
     }
 
-     function searchHandler(event) {
+    function searchHandler(event) {
 
         if (allDomElements.searchInput.value === '') {
             return;
@@ -363,45 +351,41 @@ function attachEvents() {
             event.preventDefault();
         }
 
+        const url = `/api/bookstore?title=${encodeURIComponent(name)}`;
 
-        let requestOptions = {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        };
-
-        fetch(`${BASE_URL}/${name}`, requestOptions)
-            .then((resp) => resp.json())
-            .then((data) => {
-
-
-                if (data.length === 0) {
-                    allDomElements.tbody.innerHTML = '';
-                    let tr = document.createElement('tr');
-                    let td = document.createElement('td');
-                    let span = document.createElement('span');
-                    span.textContent = 'No books matching given title found!'
-                    td.appendChild(span);
-                    tr.appendChild(td);
-                    allDomElements.tbody.appendChild(tr);
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(response.statusText);
                 }
-                for (const current of data) {
-                    let id = current.id;
-                    let currentCopy = document.getElementById(id);
-                    allDomElements.tbody.innerHTML = '';
-                    allDomElements.tbody.appendChild(currentCopy);
+                return response.json();
+            })
+            .then(data => {
+                if (data.length === 0) {
+                    alert('No matches with searched title!');
+                } else {
+                    let array = [];
+                    for (const current of data) {
+                        let id = current.id;
+                        let currentCopy = document.getElementById(id);
+                        array.push(currentCopy);
+                    }
 
+                    allDomElements.tbody.innerHTML = '';
+                    for (const currentTr of array) {
+                        allDomElements.tbody.appendChild(currentTr);
+                    }
                 }
                 allDomElements.searchInput.value = '';
-
             })
-            .catch((err) => {
-                console.error(err);
+            .catch((error) => {
+
+                allDomElements.searchInput.value = '';
+                console.error(error);
+
             });
 
     }
-
 
     function createTableRow(title, author) {
         let tr = document.createElement('tr');

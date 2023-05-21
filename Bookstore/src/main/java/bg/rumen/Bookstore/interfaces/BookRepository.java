@@ -2,21 +2,21 @@ package bg.rumen.Bookstore.interfaces;
 
 import bg.rumen.Bookstore.exceptions.NoSuchBookWithIdException;
 import bg.rumen.Bookstore.models.Book;
+import bg.rumen.Bookstore.models.BookSearchParams;
 
 import java.util.List;
+
 
 public interface BookRepository {
 
     void addBook(Book book);
 
-    void editBook(Book book, String id) throws NoSuchBookWithIdException;
+    void editBook(Book book) throws NoSuchBookWithIdException;
 
-    Book getBookById(String id) throws NoSuchBookWithIdException;
+    List<Book> getBooks(String title);
 
-    List<Book> getAllBooksWithTitle(String title);
+    Book getBookById(Integer id) throws NoSuchBookWithIdException;
 
-    List<Book> getBooks();
-
-    void deleteBookById(String id);
+    void deleteBookById(Integer id);
 
 }

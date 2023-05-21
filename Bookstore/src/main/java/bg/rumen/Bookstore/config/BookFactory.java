@@ -13,14 +13,14 @@ public class BookFactory {
     @Bean
     @Qualifier(GAME_OF_THRONES_BOOK)
     public Book gotBook() {
-        return new Book("Game Of Thrones", "George R.R. Martin", "qwe1pyt1zxc");
+        return new Book("Game Of Thrones", "George R.R. Martin", 1);
     }
 
 
     @Bean
     @Qualifier(HARRY_POTTER_BOOK)
     public Book harryBook() {
-        return new Book("Harry Potter", "J. K. Rowling", "1qwe1poi1mnb1jklr");
+        return new Book("Harry Potter", "J. K. Rowling", 2);
     }
 
 }

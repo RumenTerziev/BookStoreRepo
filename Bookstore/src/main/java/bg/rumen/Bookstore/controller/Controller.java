@@ -3,6 +3,7 @@ package bg.rumen.Bookstore.controller;
 import bg.rumen.Bookstore.interfaces.BookRepository;
 import bg.rumen.Bookstore.interfaces.CommentRepository;
 import bg.rumen.Bookstore.models.Book;
+import bg.rumen.Bookstore.models.BookSearchParams;
 import bg.rumen.Bookstore.models.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,54 +28,44 @@ public class Controller {
 
 
     @GetMapping
-    public List<Book> getAllBooks() {
-        return this.bookRepository.getBooks();
+    public List<Book> getBooks(@RequestParam(required = false) String title) {
+        return this.bookRepository.getBooks(title);
     }
 
     @PostMapping
-    public List<Book> addBook(@RequestBody Book book) {
+    public void addBook(@RequestBody Book book) {
         this.bookRepository.addBook(book);
-        return this.bookRepository.getBooks();
     }
 
 
     @PatchMapping("/{id}")
-    public List<Book> updateBook(@RequestBody Book book, @PathVariable String id) {
-        this.bookRepository.editBook(book, id);
-        return this.bookRepository.getBooks();
+    public void updateBook(@RequestBody Book book) {
+        this.bookRepository.editBook(book);
     }
 
 
     @DeleteMapping("/{id}")
-    public List<Book> deleteBook(@PathVariable String id) {
+    public void deleteBook(@PathVariable Integer id) {
         this.bookRepository.deleteBookById(id);
         this.commentsRepository.removeAllComments(id);
-        return this.bookRepository.getBooks();
     }
 
 
     @GetMapping("/comments/{id}")
-    public List<Comment> getComments(@PathVariable String id) {
-        return this.commentsRepository.getCommentsById(id);
+    public List<Comment> getComments(@PathVariable Integer id) {
+        return this.commentsRepository.getCommentById(id);
     }
 
 
     @PostMapping("/comments/{id}")
-    public List<Comment> addComment(@PathVariable String id, @RequestBody Comment comment) {
+    public void addComment(@PathVariable Integer id, @RequestBody Comment comment) {
         comment.setBookId(id);
         this.commentsRepository.addComment(comment);
-        return this.commentsRepository.getCommentsById(id);
     }
 
 
-    @GetMapping("/{title}")
-    public List<Book> getAllBooksWithTitle(@PathVariable String title) {
-        return this.bookRepository.getAllBooksWithTitle(title);
-    }
-
-
-    @DeleteMapping("/comments/{bookId}/{id}")
-    public void deleteCommentById(@PathVariable String bookId, @PathVariable String id) {
-       this.commentsRepository.deleteCommentById(bookId, id);
+    @DeleteMapping("/comments/{id}")
+    public void deleteCommentById(@PathVariable Integer id) {
+       this.commentsRepository.deleteCommentById(id);
     }
 }

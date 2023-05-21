@@ -1,5 +1,6 @@
-package bg.rumen.Bookstore.exceptions;
+package bg.rumen.Bookstore.controller;
 
+import bg.rumen.Bookstore.exceptions.NoSuchBookWithIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,4 +22,5 @@ public class ControllerAdvice {
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
+
 }

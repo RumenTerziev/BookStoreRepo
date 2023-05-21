@@ -8,9 +8,9 @@ public interface CommentRepository {
 
     void addComment(Comment comment);
 
-    List<Comment> getCommentsById(String id);
+    List<Comment> getCommentById(Integer id);
 
-    void deleteCommentById(String bookId, String id);
+    void deleteCommentById(Integer id);
 
-    void removeAllComments(String id);
+    void removeAllComments(Integer id);
 }
