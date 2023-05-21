@@ -1,6 +1,5 @@
 package bg.rumen.Bookstore.controller;
 
-
 import bg.rumen.Bookstore.interfaces.BookRepository;
 import bg.rumen.Bookstore.interfaces.CommentRepository;
 import bg.rumen.Bookstore.models.Book;
@@ -8,6 +7,7 @@ import bg.rumen.Bookstore.models.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
+
 import static bg.rumen.Bookstore.qualifiers.BeanQualifiers.*;
 
 import java.util.List;
@@ -39,27 +39,28 @@ public class Controller {
 
 
     @PatchMapping("/{id}")
-    public List<Book> updateBook(@RequestBody Book book, @PathVariable Integer id) {
+    public List<Book> updateBook(@RequestBody Book book, @PathVariable String id) {
         this.bookRepository.editBook(book, id);
         return this.bookRepository.getBooks();
     }
 
 
     @DeleteMapping("/{id}")
-    public List<Book> deleteBook(@PathVariable Integer id) {
+    public List<Book> deleteBook(@PathVariable String id) {
         this.bookRepository.deleteBookById(id);
+        this.commentsRepository.removeAllComments(id);
         return this.bookRepository.getBooks();
     }
 
 
     @GetMapping("/comments/{id}")
-    public List<Comment> getComments(@PathVariable Integer id) {
+    public List<Comment> getComments(@PathVariable String id) {
         return this.commentsRepository.getCommentsById(id);
     }
 
 
     @PostMapping("/comments/{id}")
-    public List<Comment> addComment(@PathVariable Integer id, @RequestBody Comment comment) {
+    public List<Comment> addComment(@PathVariable String id, @RequestBody Comment comment) {
         comment.setBookId(id);
         this.commentsRepository.addComment(comment);
         return this.commentsRepository.getCommentsById(id);
@@ -67,8 +68,13 @@ public class Controller {
 
 
     @GetMapping("/{title}")
-    public Book getBookByTitle(@PathVariable String title) {
-        return this.bookRepository.getBookByTitle(title);
+    public List<Book> getAllBooksWithTitle(@PathVariable String title) {
+        return this.bookRepository.getAllBooksWithTitle(title);
     }
 
+
+    @DeleteMapping("/comments/{bookId}/{id}")
+    public void deleteCommentById(@PathVariable String bookId, @PathVariable String id) {
+       this.commentsRepository.deleteCommentById(bookId, id);
+    }
 }

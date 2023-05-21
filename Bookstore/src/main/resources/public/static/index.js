@@ -195,7 +195,6 @@ function attachEvents() {
     }
 
 
-
     function commentsHandler() {
 
         let tdForm = document.createElement('td');
@@ -277,7 +276,7 @@ function attachEvents() {
         let span = document.createElement('span');
 
         let allTrs = Array.from(document.getElementsByTagName('tr'));
-        let searchedTr = allTrs.find(tr => tr.id ===id);
+        let searchedTr = allTrs.find(tr => tr.id === id);
 
 
         let reqOptions = {
@@ -296,8 +295,15 @@ function attachEvents() {
                     ul.appendChild(span);
                 } else {
                     for (const current of data) {
+                        let {bookId, comment, commentId} = current;
+                        ul.id = bookId;
                         let li = document.createElement('li');
-                        li.textContent = current.comment;
+                        li.textContent = comment;
+                        li.id = commentId;
+                        let button = document.createElement('button');
+                        button.textContent = 'Delete';
+                        button.addEventListener('click', deleteCommentHandler);
+                        li.appendChild(button);
                         ul.appendChild(li);
                     }
                 }
@@ -311,8 +317,41 @@ function attachEvents() {
 
     }
 
+    function deleteCommentHandler() {
 
-    function searchHandler(event) {
+        let searchedUl;
+        let commentId = this.parentNode.id;
+        console.log(this.parentNode.parentNode);
+        let uls = Array.from(document.getElementsByTagName('ul'));
+        for (const ul of uls) {
+            let id = ul.id;
+            if (id) {
+                searchedUl = ul;
+            }
+        }
+        let td = searchedUl.parentNode;
+        let bookId = searchedUl.id;
+
+        let requestOptions = {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
+
+
+        fetch(`${COMMENTS_URL}/${bookId}/${commentId}`, requestOptions)
+            .then(() => {
+                td.innerHTML = '';
+                loadComments(bookId);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+
+    }
+
+     function searchHandler(event) {
 
         if (allDomElements.searchInput.value === '') {
             return;
@@ -330,33 +369,37 @@ function attachEvents() {
             headers: {
                 "Content-Type": "application/json"
             }
-        }
-
+        };
 
         fetch(`${BASE_URL}/${name}`, requestOptions)
             .then((resp) => resp.json())
             .then((data) => {
 
-                if (data === null) {
+
+                if (data.length === 0) {
                     allDomElements.tbody.innerHTML = '';
                     let tr = document.createElement('tr');
                     let td = document.createElement('td');
                     let span = document.createElement('span');
-                    span.textContent = 'No matches found!';
+                    span.textContent = 'No books matching given title found!'
                     td.appendChild(span);
                     tr.appendChild(td);
                     allDomElements.tbody.appendChild(tr);
-                } else {
-
-                    let copyRef = document.getElementById(data.id);
-                    allDomElements.tbody.innerHTML = '';
-                    allDomElements.tbody.appendChild(copyRef);
-                    allDomElements.searchInput.value = '';
                 }
+                for (const current of data) {
+                    let id = current.id;
+                    let currentCopy = document.getElementById(id);
+                    allDomElements.tbody.innerHTML = '';
+                    allDomElements.tbody.appendChild(currentCopy);
+
+                }
+                allDomElements.searchInput.value = '';
+
             })
-            .catch((error) => {
-                console.error(error);
+            .catch((err) => {
+                console.error(err);
             });
+
     }
 
 

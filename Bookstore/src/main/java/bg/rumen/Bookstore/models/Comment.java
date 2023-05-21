@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Comment {
-    private Integer bookId;
+    private String bookId;
     private String comment;
+    private String commentId;
 }
