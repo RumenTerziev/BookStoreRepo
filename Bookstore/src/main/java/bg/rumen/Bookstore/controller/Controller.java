@@ -28,8 +28,8 @@ public class Controller {
 
 
     @GetMapping
-    public List<Book> getBooks(@RequestParam(required = false) String title) {
-        return this.bookRepository.getBooks(title);
+    public List<Book> getBooks(BookSearchParams searchParams) {
+        return this.bookRepository.getBooks(searchParams);
     }
 
     @PostMapping

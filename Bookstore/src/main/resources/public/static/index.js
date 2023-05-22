@@ -1,8 +1,7 @@
 window.addEventListener('load', attachEvents)
 
 function attachEvents() {
-    const BASE_URL = '/api/bookstore';
-    const COMMENTS_URL = '/api/bookstore/comments';
+
 
     const allDomElements = {
         loadButton: document.getElementById('loadBooks'),
@@ -18,6 +17,12 @@ function attachEvents() {
         authorInput: allDomElements.form.children[4],
         submitButton: allDomElements.form.children[5],
     }
+
+
+
+    const BASE_URL = '/api/bookstore';
+    const COMMENTS_URL = '/api/bookstore/comments';
+
 
     allDomElements.loadButton.addEventListener('click', loadHandler);
     allDomElements.searchButton.addEventListener('click', searchHandler);
@@ -344,16 +349,25 @@ function attachEvents() {
         if (allDomElements.searchInput.value === '') {
             return;
         }
+        let bookTitle = allDomElements.searchInput.value;
 
-        let name = allDomElements.searchInput.value;
+        const url = `/api/bookstore?bookTitle=${bookTitle}`;
 
         if (event) {
             event.preventDefault();
         }
 
-        const url = `/api/bookstore?title=${encodeURIComponent(name)}`;
 
-        fetch(url)
+
+        let requestOptions = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
+
+
+        fetch(url, requestOptions)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(response.statusText);
@@ -382,7 +396,6 @@ function attachEvents() {
 
                 allDomElements.searchInput.value = '';
                 console.error(error);
-
             });
 
     }

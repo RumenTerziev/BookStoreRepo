@@ -6,5 +6,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BookSearchParams {
-    String title;
+    private String bookTitle;
+    private String author;
+
+    public BookSearchParams() {
+    }
+
+    public BookSearchParams(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
+
+    public BookSearchParams(String bookTitle, String author) {
+      this(bookTitle);
+      this.author = author;
+    }
 }

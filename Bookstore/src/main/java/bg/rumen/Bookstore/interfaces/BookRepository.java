@@ -13,7 +13,7 @@ public interface BookRepository {
 
     void editBook(Book book) throws NoSuchBookWithIdException;
 
-    List<Book> getBooks(String title);
+    List<Book> getBooks(BookSearchParams searchParams);
 
     Book getBookById(Integer id) throws NoSuchBookWithIdException;
 

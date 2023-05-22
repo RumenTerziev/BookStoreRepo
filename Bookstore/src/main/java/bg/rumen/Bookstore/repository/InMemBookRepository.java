@@ -3,6 +3,7 @@ package bg.rumen.Bookstore.repository;
 import bg.rumen.Bookstore.exceptions.NoSuchBookWithIdException;
 import bg.rumen.Bookstore.interfaces.BookRepository;
 import bg.rumen.Bookstore.models.Book;
+import bg.rumen.Bookstore.models.BookSearchParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -49,11 +50,12 @@ public class InMemBookRepository implements BookRepository {
     }
 
     @Override
-    public List<Book> getBooks(String title) {
-        if (title == null) {
+    public List<Book> getBooks(BookSearchParams searchParams) {
+
+        if (searchParams.getBookTitle() == null) {
             return this.books;
         } else {
-            List<Book> bookList = this.books.stream().filter(book -> book.getTitle().equals(title)).collect(Collectors.toList());
+            List<Book> bookList = this.books.stream().filter(book -> book.getTitle().equals(searchParams.getBookTitle())).collect(Collectors.toList());
            if (bookList.size() > 0) {
                return bookList;
            } else {
