@@ -9,8 +9,13 @@ function attachEvents() {
         tbody: document.getElementsByTagName('tbody')[0],
         form: document.getElementById('form'),
         searchInput: document.getElementById('search-input'),
-        searchButton: document.getElementById('search-button')
+        searchAuthor: document.getElementById("search-author"),
+        searchButton: document.getElementById('search-button'),
+        prevPage: document.getElementById('prev-btn'),
+        nextPage: document.getElementById('next-btn'),
+        pageNum: document.getElementById('page-num')
     }
+
     const newDomElements = {
         formTitle: allDomElements.form.children[0],
         titleInput: allDomElements.form.children[2],
@@ -18,7 +23,8 @@ function attachEvents() {
         submitButton: allDomElements.form.children[5],
     }
 
-
+    let page = 1;
+    let allRecords;
 
     const BASE_URL = '/api/bookstore';
     const COMMENTS_URL = '/api/bookstore/comments';
@@ -28,6 +34,10 @@ function attachEvents() {
     allDomElements.searchButton.addEventListener('click', searchHandler);
     newDomElements.submitButton.addEventListener('click', createHandler);
     allDomElements.searchButton.setAttribute('disabled', 'true');
+    allDomElements.prevPage.setAttribute('disabled', 'true');
+    allDomElements.nextPage.setAttribute('disabled', 'true');
+    allDomElements.prevPage.addEventListener('click', previousHandler);
+    allDomElements.nextPage.addEventListener('click', nextHandler);
 
     function loadHandler(event) {
 
@@ -36,19 +46,26 @@ function attachEvents() {
         }
 
         allDomElements.searchButton.removeAttribute('disabled');
+        allDomElements.prevPage.removeAttribute('disabled');
+        allDomElements.nextPage.removeAttribute('disabled');
 
-        fetch(BASE_URL)
+        fetch(`${BASE_URL}?page=${page}`)
             .then((resp) => resp.json())
             .then((data) => {
 
+                let values = Array.from(Object.values(data));
+                let [totalRecords, bookList] = values;
+                allRecords = totalRecords;
+                allDomElements.pageNum.textContent = `Page ${page}`;
                 allDomElements.tbody.innerHTML = '';
 
-                for (const current of data) {
+                for (const current of bookList) {
                     let {title, author, id} = current;
                     let tr = createTableRow(title, author);
                     tr.id = id;
                     allDomElements.tbody.appendChild(tr);
                 }
+
 
             })
             .catch((err) => {
@@ -56,7 +73,6 @@ function attachEvents() {
             });
 
     }
-
 
     function createHandler(event) {
 
@@ -131,7 +147,6 @@ function attachEvents() {
 
     }
 
-
     function saveHandler(event) {
 
         if (event) {
@@ -171,7 +186,6 @@ function attachEvents() {
 
     }
 
-
     function deleteHandler(event) {
 
         if (event) {
@@ -195,7 +209,6 @@ function attachEvents() {
             });
 
     }
-
 
     function commentsHandler() {
 
@@ -266,7 +279,6 @@ function attachEvents() {
                 console.error(err);
             });
     }
-
 
     function loadComments(id, event) {
         if (event) {
@@ -346,18 +358,26 @@ function attachEvents() {
 
     function searchHandler(event) {
 
-        if (allDomElements.searchInput.value === '') {
+        if (allDomElements.searchInput.value === '' && allDomElements.searchAuthor.value === '') {
             return;
         }
-        let bookTitle = allDomElements.searchInput.value;
 
-        const url = `/api/bookstore?bookTitle=${bookTitle}`;
+        let bookTitle = allDomElements.searchInput.value;
+        let authorToSearch = allDomElements.searchAuthor.value;
+
+        let url;
+        if (bookTitle !== '' && authorToSearch !== '') {
+
+            url = `/api/bookstore?bookTitle=${encodeURIComponent(bookTitle)}&author=${encodeURIComponent(authorToSearch)}`;
+        } else if (bookTitle === '' && authorToSearch !== '') {
+            url = `/api/bookstore?author=${encodeURIComponent(authorToSearch)}`;
+        } else if (bookTitle !== '' && authorToSearch === '') {
+            url = `/api/bookstore?bookTitle=${encodeURIComponent(bookTitle)}`;
+        }
 
         if (event) {
             event.preventDefault();
         }
-
-
 
         let requestOptions = {
             method: "GET",
@@ -367,7 +387,7 @@ function attachEvents() {
         };
 
 
-        fetch(url, requestOptions)
+        fetch(`${url}&page=${page}`, requestOptions)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(response.statusText);
@@ -375,11 +395,15 @@ function attachEvents() {
                 return response.json();
             })
             .then(data => {
-                if (data.length === 0) {
+
+                let values = Array.from(Object.values(data));
+                let [_totalRecords, bookList] = values;
+
+                if (bookList.length === 0) {
                     alert('No matches with searched title!');
                 } else {
                     let array = [];
-                    for (const current of data) {
+                    for (const current of bookList) {
                         let id = current.id;
                         let currentCopy = document.getElementById(id);
                         array.push(currentCopy);
@@ -391,12 +415,31 @@ function attachEvents() {
                     }
                 }
                 allDomElements.searchInput.value = '';
+                allDomElements.searchAuthor.value = '';
             })
             .catch((error) => {
 
                 allDomElements.searchInput.value = '';
                 console.error(error);
             });
+
+    }
+
+    function previousHandler() {
+        page--;
+        if (page <= 0) {
+            page = 1;
+        }
+        loadHandler();
+    }
+
+    function nextHandler() {
+
+        if (page * 5 >= allRecords) {
+            page--;
+        }
+        page++;
+        loadHandler();
 
     }
 

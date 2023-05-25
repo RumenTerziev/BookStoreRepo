@@ -11,12 +11,20 @@
 <button id="loadBooks">LOAD ALL BOOKS</button>
 
 <div class="search-container">
-        <input type="search" id="search-input" name="Search">
-        <button id="search-button">Search Book</button>
+    <input type="search" id="search-input" name="Search" placeholder="Search for a title">
+    <input type="search" id="search-author" name="authorSearch" placeholder="Search for an author">
+    <button id="search-button">Search Book</button>
 </div>
 
 <table>
     <thead>
+    <tr>
+        <th id="page-num">Page 1</th>
+        <th>
+            <button id="prev-btn"><< Prev</button><button id="next-btn">Next >></button>
+        </th>
+    </tr>
+
     <tr>
         <th>Title</th>
         <th>Author</th>

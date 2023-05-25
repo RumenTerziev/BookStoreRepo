@@ -2,9 +2,9 @@ package bg.rumen.Bookstore.interfaces;
 
 import bg.rumen.Bookstore.exceptions.NoSuchBookWithIdException;
 import bg.rumen.Bookstore.models.Book;
-import bg.rumen.Bookstore.models.BookSearchParams;
-
-import java.util.List;
+import bg.rumen.Bookstore.models.params.BookSearchParams;
+import bg.rumen.Bookstore.models.params.PageParams;
+import bg.rumen.Bookstore.models.PageResult;
 
 
 public interface BookRepository {
@@ -13,7 +13,7 @@ public interface BookRepository {
 
     void editBook(Book book) throws NoSuchBookWithIdException;
 
-    List<Book> getBooks(BookSearchParams searchParams);
+    PageResult<Book> getBooks(BookSearchParams searchParams, PageParams pageParams);
 
     Book getBookById(Integer id) throws NoSuchBookWithIdException;
 

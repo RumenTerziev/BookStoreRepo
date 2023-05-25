@@ -3,8 +3,10 @@ package bg.rumen.Bookstore.controller;
 import bg.rumen.Bookstore.interfaces.BookRepository;
 import bg.rumen.Bookstore.interfaces.CommentRepository;
 import bg.rumen.Bookstore.models.Book;
-import bg.rumen.Bookstore.models.BookSearchParams;
+import bg.rumen.Bookstore.models.PageResult;
+import bg.rumen.Bookstore.models.params.BookSearchParams;
 import bg.rumen.Bookstore.models.Comment;
+import bg.rumen.Bookstore.models.params.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +30,8 @@ public class Controller {
 
 
     @GetMapping
-    public List<Book> getBooks(BookSearchParams searchParams) {
-        return this.bookRepository.getBooks(searchParams);
+    public PageResult<Book> getBooks(BookSearchParams searchParams, PageParams pageParams) {
+        return this.bookRepository.getBooks(searchParams, pageParams);
     }
 
     @PostMapping
