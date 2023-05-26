@@ -312,8 +312,6 @@ function attachEvents() {
 
                 let values = Array.from(Object.values(data));
                 let [totalRecords, commentList] = values;
-                console.log(totalRecords);
-                console.log(commentList);
                 allCommentsRecords = totalRecords;
 
                 if (allCommentsRecords === 0) {
@@ -321,9 +319,22 @@ function attachEvents() {
                     ul.appendChild(span);
                 } else {
 
+                    let buttonPrevComment = document.createElement('button');
+                    buttonPrevComment.textContent = '<<prev';
+                    buttonPrevComment.addEventListener('click', prevCommentHandler);
+                    let buttonNextComment = document.createElement('button');
+                    buttonNextComment.textContent = 'next>>';
+                    buttonNextComment.addEventListener('click', nextCommentHandler);
+                    let liButtons = document.createElement('li');
+                    liButtons.appendChild(buttonPrevComment);
+                    liButtons.appendChild(buttonNextComment);
+                    ul.appendChild(liButtons);
+
                     for (const current of commentList) {
                         let {bookId, comment, commentId} = current;
                         searchedTr.id = bookId;
+                        buttonPrevComment.id = bookId;
+                        buttonNextComment.id = bookId;
                         let li = document.createElement('li');
                         li.textContent = comment;
                         li.id = commentId;
@@ -453,6 +464,32 @@ function attachEvents() {
         }
         page++;
         loadHandler();
+
+    }
+
+    function prevCommentHandler() {
+        let id = this.id;
+        let td = this.parentNode.parentNode.parentNode;
+        td.remove();
+        commentsPage--;
+
+        if (commentsPage <= 0) {
+            commentsPage = 1;
+        }
+
+        loadComments(id);
+
+    }
+
+    function nextCommentHandler() {
+        let id = this.id;
+        let td = this.parentNode.parentNode.parentNode;
+        td.remove();
+        if (commentsPage * 5 >= allCommentsRecords) {
+            commentsPage--;
+        }
+        commentsPage++;
+        loadComments(id);
 
     }
 

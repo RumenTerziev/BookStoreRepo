@@ -3,7 +3,7 @@ package bg.rumen.Bookstore.repository;
 import bg.rumen.Bookstore.exceptions.NoSuchBookWithIdException;
 import bg.rumen.Bookstore.interfaces.BookRepository;
 import bg.rumen.Bookstore.models.Book;
-import bg.rumen.Bookstore.models.PageManager;
+import bg.rumen.Bookstore.util.PageManager;
 import bg.rumen.Bookstore.models.params.BookSearchParams;
 import bg.rumen.Bookstore.models.params.PageParams;
 import bg.rumen.Bookstore.models.PageResult;

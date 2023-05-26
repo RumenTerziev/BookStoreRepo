@@ -1,9 +1,8 @@
 package bg.rumen.Bookstore.repository;
 
 import bg.rumen.Bookstore.interfaces.CommentRepository;
-import bg.rumen.Bookstore.models.Book;
 import bg.rumen.Bookstore.models.Comment;
-import bg.rumen.Bookstore.models.PageManager;
+import bg.rumen.Bookstore.util.PageManager;
 import bg.rumen.Bookstore.models.PageResult;
 import bg.rumen.Bookstore.models.params.PageParams;
 

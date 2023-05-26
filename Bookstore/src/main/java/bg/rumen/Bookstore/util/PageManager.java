@@ -1,4 +1,4 @@
-package bg.rumen.Bookstore.models;
+package bg.rumen.Bookstore.util;
 
 import java.util.ArrayList;
 import java.util.List;
