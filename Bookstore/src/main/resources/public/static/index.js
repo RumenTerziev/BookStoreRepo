@@ -30,7 +30,7 @@ function attachEvents() {
     const COMMENTS_URL = '/api/bookstore/comments';
 
 
-    allDomElements.loadButton.addEventListener('click', loadHandler);
+    allDomElements.loadButton.addEventListener('click', loadFirstPage);
     allDomElements.searchButton.addEventListener('click', searchHandler);
     newDomElements.submitButton.addEventListener('click', createHandler);
     allDomElements.searchButton.setAttribute('disabled', 'true');
@@ -72,6 +72,11 @@ function attachEvents() {
                 console.error(err);
             });
 
+    }
+
+    function loadFirstPage() {
+        page = 1;
+        loadHandler();
     }
 
     function createHandler(event) {

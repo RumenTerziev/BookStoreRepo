@@ -1,7 +1,11 @@
 package bg.rumen.Bookstore.repository;
 
 import bg.rumen.Bookstore.interfaces.CommentRepository;
+import bg.rumen.Bookstore.models.Book;
 import bg.rumen.Bookstore.models.Comment;
+import bg.rumen.Bookstore.models.PageManager;
+import bg.rumen.Bookstore.models.PageResult;
+import bg.rumen.Bookstore.models.params.PageParams;
 
 import java.util.*;
 
@@ -24,11 +28,19 @@ public class InMemCommentRepository implements CommentRepository {
 
 
     @Override
-    public List<Comment> getCommentById(Integer id) {
+    public PageResult<Comment> getComments(Integer id, PageParams pageParams) {
+
+        PageResult<Comment> result = new PageResult<>();
         if (!this.comments.containsKey(id)) {
-            return new ArrayList<>();
+            result.setTList(new ArrayList<>());
+            result.setTotalRecords(0);
+        } else {
+            List<Comment> commentList = new ArrayList<>(this.comments.get(id));
+            commentList = PageManager.getPages(commentList, pageParams.getLimit(), pageParams.getPage());
+            result.setTList(commentList);
+            result.setTotalRecords(commentList.size());
         }
-        return Collections.unmodifiableList(this.comments.get(id));
+        return result;
     }
 
     @Override

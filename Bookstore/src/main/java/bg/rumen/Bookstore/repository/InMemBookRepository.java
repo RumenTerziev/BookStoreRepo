@@ -3,6 +3,7 @@ package bg.rumen.Bookstore.repository;
 import bg.rumen.Bookstore.exceptions.NoSuchBookWithIdException;
 import bg.rumen.Bookstore.interfaces.BookRepository;
 import bg.rumen.Bookstore.models.Book;
+import bg.rumen.Bookstore.models.PageManager;
 import bg.rumen.Bookstore.models.params.BookSearchParams;
 import bg.rumen.Bookstore.models.params.PageParams;
 import bg.rumen.Bookstore.models.PageResult;
@@ -65,21 +66,7 @@ public class InMemBookRepository implements BookRepository {
             bookList = bookList.stream().filter(b -> b.getAuthor().equals(searchParams.getAuthor())).collect(Collectors.toList());
         }
 
-
-        if (pageParams.getPage() != null) {
-            int page = pageParams.getPage();
-            int limit = pageParams.getLimit();
-
-            int startIndex = Math.min(page * limit - limit, bookList.size() - 1);
-            if (startIndex <= 0) {
-                startIndex = 0;
-            }
-            int endIndex = Math.min(page * limit, bookList.size());
-            if (endIndex <= 0) {
-                endIndex = 1;
-            }
-            bookList = bookList.subList(startIndex, endIndex);
-        }
+        bookList = PageManager.getPages(bookList, pageParams.getLimit(), pageParams.getPage());
 
         result.setTList(bookList);
         result.setTotalRecords(this.books.size());

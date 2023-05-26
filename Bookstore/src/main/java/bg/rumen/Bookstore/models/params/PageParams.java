@@ -10,7 +10,6 @@ public class PageParams {
     private static final Integer LIMIT = 5;
     @Positive
     private Integer page;
-    private static Integer totalRecords;
 
 
     public Integer getLimit() {

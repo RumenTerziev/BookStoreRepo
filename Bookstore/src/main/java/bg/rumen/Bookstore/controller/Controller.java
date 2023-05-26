@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import static bg.rumen.Bookstore.qualifiers.BeanQualifiers.*;
 
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/bookstore")
@@ -54,8 +52,8 @@ public class Controller {
 
 
     @GetMapping("/comments/{id}")
-    public List<Comment> getComments(@PathVariable Integer id) {
-        return this.commentsRepository.getCommentById(id);
+    public PageResult<Comment> getComments(@PathVariable Integer id, PageParams pageParams) {
+        return this.commentsRepository.getComments(id, pageParams);
     }
 
 

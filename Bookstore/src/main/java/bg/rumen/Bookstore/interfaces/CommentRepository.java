@@ -1,14 +1,15 @@
 package bg.rumen.Bookstore.interfaces;
 
 import bg.rumen.Bookstore.models.Comment;
+import bg.rumen.Bookstore.models.PageResult;
+import bg.rumen.Bookstore.models.params.PageParams;
 
-import java.util.List;
 
 public interface CommentRepository {
 
     void addComment(Comment comment);
 
-    List<Comment> getCommentById(Integer id);
+    PageResult<Comment> getComments(Integer id, PageParams pageParams);
 
     void deleteCommentById(Integer id);
 
