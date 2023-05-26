@@ -23,6 +23,9 @@ function attachEvents() {
         submitButton: allDomElements.form.children[5],
     }
 
+
+    let allCommentPagesObject = {};
+
     let page = 1;
     let allRecords;
     let commentsPage = 1;
@@ -63,6 +66,7 @@ function attachEvents() {
 
                 for (const current of bookList) {
                     let {title, author, id} = current;
+                    allCommentPagesObject[id] = commentsPage;
                     let tr = createTableRow(title, author);
                     tr.id = id;
                     allDomElements.tbody.appendChild(tr);
@@ -306,7 +310,7 @@ function attachEvents() {
             }
         }
 
-        fetch(`${COMMENTS_URL}/${id}?page=${commentsPage}`, reqOptions)
+        fetch(`${COMMENTS_URL}/${id}?page=${allCommentPagesObject[id]}`, reqOptions)
             .then((resp) => resp.json())
             .then((data) => {
 
@@ -332,6 +336,7 @@ function attachEvents() {
 
                     for (const current of commentList) {
                         let {bookId, comment, commentId} = current;
+                        allCommentPagesObject[bookId] = commentsPage;
                         searchedTr.id = bookId;
                         buttonPrevComment.id = bookId;
                         buttonNextComment.id = bookId;
@@ -467,28 +472,46 @@ function attachEvents() {
 
     }
 
-    function prevCommentHandler() {
+    function prevCommentHandler(event) {
+        if (event) {
+            event.preventDefault();
+        }
         let id = this.id;
         let td = this.parentNode.parentNode.parentNode;
         td.remove();
-        commentsPage--;
+        allCommentPagesObject[id]--;
 
-        if (commentsPage <= 0) {
-            commentsPage = 1;
+        if (allCommentPagesObject[id] <= 0) {
+            allCommentPagesObject[id] = 1;
         }
 
         loadComments(id);
 
     }
 
-    function nextCommentHandler() {
+    function nextCommentHandler(event) {
+        if (event) {
+            event.preventDefault();
+        }
         let id = this.id;
         let td = this.parentNode.parentNode.parentNode;
+
+        fetch(`/api/bookstore/comments/${id}?page=${allCommentPagesObject[id]}`)
+            .then((resp) => resp.json())
+            .then((data) => {
+                let values = Array.from(Object.values(data));
+                let [totalRecords, commentList] = values;
+                allCommentsRecords = totalRecords;
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+
         td.remove();
-        if (commentsPage * 5 >= allCommentsRecords) {
-            commentsPage--;
+        if (allCommentPagesObject[id] * 5 >= allCommentsRecords) {
+            allCommentPagesObject[id]--;
         }
-        commentsPage++;
+        allCommentPagesObject[id]++;
         loadComments(id);
 
     }

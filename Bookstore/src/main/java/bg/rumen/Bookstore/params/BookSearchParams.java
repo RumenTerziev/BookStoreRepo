@@ -1,4 +1,4 @@
-package bg.rumen.Bookstore.models.params;
+package bg.rumen.Bookstore.params;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -2,8 +2,8 @@ package bg.rumen.Bookstore.interfaces;
 
 import bg.rumen.Bookstore.exceptions.NoSuchBookWithIdException;
 import bg.rumen.Bookstore.models.Book;
-import bg.rumen.Bookstore.models.params.BookSearchParams;
-import bg.rumen.Bookstore.models.params.PageParams;
+import bg.rumen.Bookstore.params.BookSearchParams;
+import bg.rumen.Bookstore.params.PageParams;
 import bg.rumen.Bookstore.models.PageResult;
 
 

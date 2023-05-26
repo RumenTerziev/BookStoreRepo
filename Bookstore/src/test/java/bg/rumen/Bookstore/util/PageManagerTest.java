@@ -1,4 +1,5 @@
 package bg.rumen.Bookstore.util;
+import bg.rumen.Bookstore.params.PageParams;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,6 +11,7 @@ public class PageManagerTest {
 
     private List<Integer> testList;
     private List<int[]> testCases;
+    private PageParams pageParams;
 
     @Before
     public void setUp() {
@@ -20,6 +22,7 @@ public class PageManagerTest {
         int [] testCaseFour = {91, 92, 93, 94, 95};
         int [] testCaseFive = {96, 97, 98, 99, 100};
         this.testCases = Arrays.asList(testCaseOne, testCaseTwo, testCaseThree, testCaseFour, testCaseFive);
+        this.pageParams = new PageParams();
     }
 
 
@@ -30,11 +33,16 @@ public class PageManagerTest {
             this.testList.add(num);
         }
 
-        List<Integer> newList = PageManager.getPages(this.testList, 5, 1);
-        List<Integer> secondList = PageManager.getPages(this.testList, 5, 3);
-        List<Integer> thirdList = PageManager.getPages(this.testList, 5, 10);
-        List<Integer> fourthList =PageManager.getPages(this.testList, 5, 19);
-        List<Integer> fifthList = PageManager.getPages(this.testList, 5, 20);
+        this.pageParams.setPage(1);
+        List<Integer> newList = PageManager.getPages(this.testList, this.pageParams);
+        this.pageParams.setPage(3);
+        List<Integer> secondList = PageManager.getPages(this.testList, this.pageParams);
+        this.pageParams.setPage(10);
+        List<Integer> thirdList = PageManager.getPages(this.testList, this.pageParams);
+        this.pageParams.setPage(19);
+        List<Integer> fourthList =PageManager.getPages(this.testList, this.pageParams);
+        this.pageParams.setPage(20);
+        List<Integer> fifthList = PageManager.getPages(this.testList, this.pageParams);
 
         int[] firstArr = new int[5];
         int[] secondArr = new int[5];

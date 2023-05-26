@@ -4,7 +4,7 @@ import bg.rumen.Bookstore.interfaces.CommentRepository;
 import bg.rumen.Bookstore.models.Comment;
 import bg.rumen.Bookstore.util.PageManager;
 import bg.rumen.Bookstore.models.PageResult;
-import bg.rumen.Bookstore.models.params.PageParams;
+import bg.rumen.Bookstore.params.PageParams;
 
 import java.util.*;
 
@@ -42,7 +42,7 @@ public class InMemCommentRepository implements CommentRepository {
                 result.setTList(this.comments.get(id));
             } else {
 
-                commentList = PageManager.getPages(commentList, pageParams.getLimit(), pageParams.getPage());
+                commentList = PageManager.getPages(commentList, pageParams);
                 result.setTList(commentList);
             }
             result.setTotalRecords(this.comments.get(id).size());

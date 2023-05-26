@@ -1,11 +1,16 @@
 package bg.rumen.Bookstore.util;
 
+import bg.rumen.Bookstore.params.PageParams;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PageManager {
 
-    public static <T> List<T> getPages(List<T> tList, Integer limit, Integer page) {
+    public static <T> List<T> getPages(List<T> tList, PageParams pageParams) {
+        Integer page = pageParams.getPage();
+        Integer limit = pageParams.getLimit();
+
         if (page != null && limit != null) {
 
             int startIndex = Math.min(page * limit - limit, tList.size() - 1);

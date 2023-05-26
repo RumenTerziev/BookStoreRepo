@@ -4,8 +4,8 @@ import bg.rumen.Bookstore.exceptions.NoSuchBookWithIdException;
 import bg.rumen.Bookstore.interfaces.BookRepository;
 import bg.rumen.Bookstore.models.Book;
 import bg.rumen.Bookstore.util.PageManager;
-import bg.rumen.Bookstore.models.params.BookSearchParams;
-import bg.rumen.Bookstore.models.params.PageParams;
+import bg.rumen.Bookstore.params.BookSearchParams;
+import bg.rumen.Bookstore.params.PageParams;
 import bg.rumen.Bookstore.models.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -66,7 +66,7 @@ public class InMemBookRepository implements BookRepository {
             bookList = bookList.stream().filter(b -> b.getAuthor().equals(searchParams.getAuthor())).collect(Collectors.toList());
         }
 
-        bookList = PageManager.getPages(bookList, pageParams.getLimit(), pageParams.getPage());
+        bookList = PageManager.getPages(bookList, pageParams);
 
         result.setTList(bookList);
         result.setTotalRecords(this.books.size());

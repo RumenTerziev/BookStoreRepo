@@ -2,7 +2,7 @@ package bg.rumen.Bookstore.interfaces;
 
 import bg.rumen.Bookstore.models.Comment;
 import bg.rumen.Bookstore.models.PageResult;
-import bg.rumen.Bookstore.models.params.PageParams;
+import bg.rumen.Bookstore.params.PageParams;
 
 
 public interface CommentRepository {
