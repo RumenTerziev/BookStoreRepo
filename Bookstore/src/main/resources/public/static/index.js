@@ -25,6 +25,8 @@ function attachEvents() {
 
     let page = 1;
     let allRecords;
+    let commentsPage = 1;
+    let allCommentsRecords;
 
     const BASE_URL = '/api/bookstore';
     const COMMENTS_URL = '/api/bookstore/comments';
@@ -304,16 +306,22 @@ function attachEvents() {
             }
         }
 
-        fetch(`${COMMENTS_URL}/${id}`, reqOptions)
+        fetch(`${COMMENTS_URL}/${id}?page=${commentsPage}`, reqOptions)
             .then((resp) => resp.json())
             .then((data) => {
 
-                if (data.length === 0) {
+                let values = Array.from(Object.values(data));
+                let [totalRecords, commentList] = values;
+                console.log(totalRecords);
+                console.log(commentList);
+                allCommentsRecords = totalRecords;
+
+                if (allCommentsRecords === 0) {
                     span.textContent = 'No comments to show!';
                     ul.appendChild(span);
                 } else {
 
-                    for (const current of data) {
+                    for (const current of commentList) {
                         let {bookId, comment, commentId} = current;
                         searchedTr.id = bookId;
                         let li = document.createElement('li');

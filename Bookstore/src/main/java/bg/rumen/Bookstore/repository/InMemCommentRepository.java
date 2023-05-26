@@ -30,15 +30,23 @@ public class InMemCommentRepository implements CommentRepository {
     @Override
     public PageResult<Comment> getComments(Integer id, PageParams pageParams) {
 
+
         PageResult<Comment> result = new PageResult<>();
-        if (!this.comments.containsKey(id)) {
+
+        List<Comment> commentList = this.comments.get(id);
+
+        if (commentList == null || commentList.size() == 0) {
             result.setTList(new ArrayList<>());
             result.setTotalRecords(0);
         } else {
-            List<Comment> commentList = new ArrayList<>(this.comments.get(id));
-            commentList = PageManager.getPages(commentList, pageParams.getLimit(), pageParams.getPage());
-            result.setTList(commentList);
-            result.setTotalRecords(commentList.size());
+            if (pageParams.getPage() == null) {
+                result.setTList(this.comments.get(id));
+            } else {
+
+                commentList = PageManager.getPages(commentList, pageParams.getLimit(), pageParams.getPage());
+                result.setTList(commentList);
+            }
+            result.setTotalRecords(this.comments.get(id).size());
         }
         return result;
     }
