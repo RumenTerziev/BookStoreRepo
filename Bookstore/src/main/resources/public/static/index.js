@@ -29,7 +29,7 @@ function attachEvents() {
     let page = 1;
     let allRecords;
     let commentsPage = 1;
-    let allCommentsRecords;
+    let allCommentsRecords = 0;
 
     const BASE_URL = '/api/bookstore';
     const COMMENTS_URL = '/api/bookstore/comments';
@@ -64,9 +64,13 @@ function attachEvents() {
                 allDomElements.pageNum.textContent = `Page ${page}`;
                 allDomElements.tbody.innerHTML = '';
 
+
                 for (const current of bookList) {
                     let {title, author, id} = current;
-                    allCommentPagesObject[id] = commentsPage;
+                    allCommentPagesObject[id] = {
+                        page: commentsPage,
+                        records: allCommentsRecords
+                    };
                     let tr = createTableRow(title, author);
                     tr.id = id;
                     allDomElements.tbody.appendChild(tr);
@@ -302,7 +306,6 @@ function attachEvents() {
         let allTrs = Array.from(document.getElementsByTagName('tr'));
         let searchedTr = allTrs.find(tr => tr.id === id);
 
-
         let reqOptions = {
             method: "GET",
             headers: {
@@ -310,7 +313,8 @@ function attachEvents() {
             }
         }
 
-        fetch(`${COMMENTS_URL}/${id}?page=${allCommentPagesObject[id]}`, reqOptions)
+        console.log(allCommentPagesObject[id].page + "     ======        ");
+        fetch(`${COMMENTS_URL}/${id}?page=${allCommentPagesObject[id].page}`, reqOptions)
             .then((resp) => resp.json())
             .then((data) => {
 
@@ -336,7 +340,10 @@ function attachEvents() {
 
                     for (const current of commentList) {
                         let {bookId, comment, commentId} = current;
-                        allCommentPagesObject[bookId] = commentsPage;
+                        allCommentPagesObject[bookId] = {
+                            page: commentsPage,
+                            commentRecords: allCommentsRecords
+                        };
                         searchedTr.id = bookId;
                         buttonPrevComment.id = bookId;
                         buttonNextComment.id = bookId;
@@ -473,45 +480,50 @@ function attachEvents() {
     }
 
     function prevCommentHandler(event) {
+
         if (event) {
             event.preventDefault();
         }
         let id = this.id;
         let td = this.parentNode.parentNode.parentNode;
         td.remove();
-        allCommentPagesObject[id]--;
 
-        if (allCommentPagesObject[id] <= 0) {
-            allCommentPagesObject[id] = 1;
+        commentsPage--;
+        if (allCommentPagesObject[id].page <= 0) {
+            allCommentPagesObject[id].page = 1;
         }
 
+        if (commentsPage <= 0) {
+            commentsPage = 1;
+        }
+
+        allCommentPagesObject[id].page = commentsPage;
         loadComments(id);
 
     }
 
     function nextCommentHandler(event) {
+
         if (event) {
             event.preventDefault();
         }
         let id = this.id;
         let td = this.parentNode.parentNode.parentNode;
 
-        fetch(`/api/bookstore/comments/${id}?page=${allCommentPagesObject[id]}`)
-            .then((resp) => resp.json())
-            .then((data) => {
-                let values = Array.from(Object.values(data));
-                let [totalRecords, commentList] = values;
-                allCommentsRecords = totalRecords;
-            })
-            .catch((err) => {
-                console.error(err);
-            });
 
-        td.remove();
-        if (allCommentPagesObject[id] * 5 >= allCommentsRecords) {
-            allCommentPagesObject[id]--;
+
+        if (allCommentPagesObject[id].page * 5 >= allCommentPagesObject[id].commentRecords) {
+            allCommentPagesObject[id].page--;
         }
-        allCommentPagesObject[id]++;
+
+        if (commentsPage * 5 >= allCommentPagesObject[id].commentRecords) {
+            commentsPage--;
+        }
+        commentsPage++;
+        allCommentPagesObject[id].page = commentsPage;
+        td.remove();
+
+
         loadComments(id);
 
     }
