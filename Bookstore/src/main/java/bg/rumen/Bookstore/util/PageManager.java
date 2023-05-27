@@ -2,7 +2,6 @@ package bg.rumen.Bookstore.util;
 
 import bg.rumen.Bookstore.params.PageParams;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PageManager {
@@ -11,7 +10,7 @@ public class PageManager {
         Integer page = pageParams.getPage();
         Integer limit = pageParams.getLimit();
 
-        if (page != null && limit != null) {
+        if (page != null) {
 
             int startIndex = Math.min(page * limit - limit, tList.size() - 1);
             if (startIndex <= 0) {
@@ -22,8 +21,6 @@ public class PageManager {
                 endIndex = 1;
             }
              tList = tList.subList(startIndex, endIndex);
-        } else {
-            tList = new ArrayList<>();
         }
 
         return tList;
