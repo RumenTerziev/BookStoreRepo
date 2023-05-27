@@ -398,6 +398,8 @@ function attachEvents() {
             return;
         }
 
+        page = 1;
+
         let bookTitle = allDomElements.searchInput.value;
         let authorToSearch = allDomElements.searchAuthor.value;
 
@@ -439,16 +441,20 @@ function attachEvents() {
                     alert('No matches with searched title!');
                 } else {
                     let array = [];
+
+
                     for (const current of bookList) {
-                        let id = current.id;
-                        let currentCopy = document.getElementById(id);
-                        array.push(currentCopy);
+                        let {title, author, id} = current;
+                        let currentTr = createTableRow(title, author);
+                        currentTr.id = id;
+                        array.push(currentTr);
+                    }
+                    allDomElements.tbody.innerHTML = '';
+
+                    for (const trElement of array) {
+                        allDomElements.tbody.appendChild(trElement);
                     }
 
-                    allDomElements.tbody.innerHTML = '';
-                    for (const currentTr of array) {
-                        allDomElements.tbody.appendChild(currentTr);
-                    }
                 }
                 allDomElements.searchInput.value = '';
                 allDomElements.searchAuthor.value = '';
@@ -509,7 +515,6 @@ function attachEvents() {
         }
         let id = this.id;
         let td = this.parentNode.parentNode.parentNode;
-
 
 
         if (allCommentPagesObject[id].page * 5 >= allCommentPagesObject[id].commentRecords) {
