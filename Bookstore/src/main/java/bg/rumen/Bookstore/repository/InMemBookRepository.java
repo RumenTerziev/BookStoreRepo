@@ -55,36 +55,17 @@ public class InMemBookRepository implements BookRepository {
     @Override
     public PageResult<Book> getBooks(BookSearchParams searchParams, PageParams pageParams) {
 
-        PageResult<Book> result = new PageResult<>();
         List<Book> bookList = new ArrayList<>(this.books);
 
-        boolean isFiltered = false;
         if (searchParams.getBookTitle() != null) {
             bookList = bookList.stream().filter(b -> b.getTitle().equals(searchParams.getBookTitle())).collect(Collectors.toList());
-            isFiltered = true;
         }
 
         if (searchParams.getAuthor() != null) {
             bookList = bookList.stream().filter(b -> b.getAuthor().equals(searchParams.getAuthor())).collect(Collectors.toList());
-            isFiltered = true;
         }
 
-
-        if (bookList.size() == 0) {
-            result.setTList(new ArrayList<>());
-            result.setTotalRecords(0);
-        } else {
-            bookList = PageManager.getPages(bookList, pageParams);
-            result.setTList(bookList);
-            if(isFiltered) {
-                result.setTotalRecords(bookList.size());
-            } else {
-                result.setTotalRecords(this.books.size());
-            }
-
-        }
-        return result;
-
+        return PageManager.getPages(bookList, pageParams);
     }
 
     @Override

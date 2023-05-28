@@ -50,21 +50,28 @@ function attachEvents() {
             event.preventDefault();
         }
 
+        let totalPages;
         allDomElements.searchButton.removeAttribute('disabled');
         allDomElements.prevPage.removeAttribute('disabled');
         allDomElements.nextPage.removeAttribute('disabled');
+
 
         fetch(`${BASE_URL}?page=${page}`)
             .then((resp) => resp.json())
             .then((data) => {
 
                 let values = Array.from(Object.values(data));
-                let [totalRecords, bookList] = values;
+                let [bookList, totalRecords] = values;
+                totalPages = Math.ceil(totalRecords / 5);
                 allRecords = totalRecords;
-                allDomElements.pageNum.textContent = `Page ${page}`;
+                allDomElements.pageNum.textContent = `Page ${page} of ${totalPages}`;
                 allDomElements.tbody.innerHTML = '';
 
 
+                let currentBookNum = 1;
+                if (page > 1) {
+                    currentBookNum = currentBookNum + (page - 1) * 5;
+                }
                 for (const current of bookList) {
                     let {title, author, id} = current;
                     allCommentPagesObject[id] = {
@@ -72,6 +79,9 @@ function attachEvents() {
                         records: allCommentsRecords
                     };
                     let tr = createTableRow(title, author);
+                    let tdNum = tr.querySelectorAll('td')[0];
+                    tdNum.textContent = `#${currentBookNum}`;
+                    currentBookNum++;
                     tr.id = id;
                     allDomElements.tbody.appendChild(tr);
                 }
@@ -144,8 +154,8 @@ function attachEvents() {
 
 
         let tds = Array.from(searchedTr.children);
-        let firstTd = tds[0];
-        let secondTd = tds[1];
+        let firstTd = tds[1];
+        let secondTd = tds[2];
 
 
         newDomElements.titleInput.value = firstTd.textContent;
@@ -215,8 +225,14 @@ function attachEvents() {
         };
 
 
+
+
         fetch(`${BASE_URL}/${searchedId}`, requestOptions)
             .then(() => {
+                let arr = Array.from(Object.values(allDomElements.tbody.querySelectorAll('tr')));
+                if (arr.length === 1) {
+                    page--;
+                }
                 loadHandler();
             })
             .catch((err) => {
@@ -262,7 +278,7 @@ function attachEvents() {
         let searchedId = searchedTr.id;
         let td = searchedTr.getElementsByTagName('td')[0];
         let name = td.textContent;
-        let input = searchedTr.getElementsByTagName('td')[3].getElementsByTagName('input')[0];
+        let input = searchedTr.getElementsByTagName('td')[4].getElementsByTagName('input')[0];
 
         if (input.value === '') {
             return;
@@ -281,7 +297,7 @@ function attachEvents() {
             },
             body: payload
         }
-        let lastTd = searchedTr.getElementsByTagName('td')[4];
+        let lastTd = searchedTr.getElementsByTagName('td')[5];
 
 
         fetch(`${COMMENTS_URL}/${searchedId}`, reqOptions)
@@ -313,13 +329,14 @@ function attachEvents() {
             }
         }
 
-        console.log(allCommentPagesObject[id].page + "     ======        ");
+        commentsPage = allCommentPagesObject[id].page;
+
         fetch(`${COMMENTS_URL}/${id}?page=${allCommentPagesObject[id].page}`, reqOptions)
             .then((resp) => resp.json())
             .then((data) => {
 
                 let values = Array.from(Object.values(data));
-                let [totalRecords, commentList] = values;
+                let [commentList, totalRecords] = values;
                 allCommentsRecords = totalRecords;
 
                 if (allCommentsRecords === 0) {
@@ -372,6 +389,7 @@ function attachEvents() {
         let commentId = this.parentNode.id;
         let td = this.parentNode.parentNode.parentNode;
         let bookId = td.parentNode.id;
+
 
         let requestOptions = {
             method: "DELETE",
@@ -435,10 +453,10 @@ function attachEvents() {
             .then(data => {
 
                 let values = Array.from(Object.values(data));
-                let [_totalRecords, bookList] = values;
+                let [bookList, _totalRecords] = values;
 
                 if (bookList.length === 0) {
-                    alert('No matches with searched title!');
+                    alert('No matches with searched parameters!');
                 } else {
                     let array = [];
 
@@ -494,16 +512,12 @@ function attachEvents() {
         let td = this.parentNode.parentNode.parentNode;
         td.remove();
 
-        commentsPage--;
+        allCommentPagesObject[id].page--;
+
         if (allCommentPagesObject[id].page <= 0) {
             allCommentPagesObject[id].page = 1;
         }
 
-        if (commentsPage <= 0) {
-            commentsPage = 1;
-        }
-
-        allCommentPagesObject[id].page = commentsPage;
         loadComments(id);
 
     }
@@ -516,18 +530,11 @@ function attachEvents() {
         let id = this.id;
         let td = this.parentNode.parentNode.parentNode;
 
-
         if (allCommentPagesObject[id].page * 5 >= allCommentPagesObject[id].commentRecords) {
             allCommentPagesObject[id].page--;
         }
-
-        if (commentsPage * 5 >= allCommentPagesObject[id].commentRecords) {
-            commentsPage--;
-        }
-        commentsPage++;
-        allCommentPagesObject[id].page = commentsPage;
+        allCommentPagesObject[id].page++;
         td.remove();
-
 
         loadComments(id);
 
@@ -535,6 +542,8 @@ function attachEvents() {
 
     function createTableRow(title, author) {
         let tr = document.createElement('tr');
+        let tdNumber = document.createElement('td');
+        tdNumber.textContent = '#1';
         let tdTitle = document.createElement('td');
         let tdAuthor = document.createElement('td');
         tdTitle.textContent = title;
@@ -552,6 +561,7 @@ function attachEvents() {
         tdButtons.appendChild(editButton);
         tdButtons.appendChild(deleteButton);
         tdButtons.appendChild(commentsButton);
+        tr.appendChild(tdNumber);
         tr.appendChild(tdTitle);
         tr.appendChild(tdAuthor);
         tr.appendChild(tdButtons);

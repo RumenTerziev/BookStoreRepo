@@ -8,6 +8,6 @@ import java.util.List;
 @Getter
 @Setter
 public class PageResult<T> {
-    private List<T> tList;
+    private List<T> items;
     private Integer totalRecords;
 }
