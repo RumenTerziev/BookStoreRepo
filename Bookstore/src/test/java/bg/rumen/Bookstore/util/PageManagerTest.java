@@ -34,15 +34,15 @@ public class PageManagerTest {
         }
 
         this.pageParams.setPage(1);
-        List<Integer> newList = PageManager.getPages(this.testList, this.pageParams);
+        List<Integer> newList = PageManager.getPages(this.testList, this.pageParams).getItems();
         this.pageParams.setPage(3);
-        List<Integer> secondList = PageManager.getPages(this.testList, this.pageParams);
+        List<Integer> secondList = PageManager.getPages(this.testList, this.pageParams).getItems();
         this.pageParams.setPage(10);
-        List<Integer> thirdList = PageManager.getPages(this.testList, this.pageParams);
+        List<Integer> thirdList = PageManager.getPages(this.testList, this.pageParams).getItems();
         this.pageParams.setPage(19);
-        List<Integer> fourthList =PageManager.getPages(this.testList, this.pageParams);
+        List<Integer> fourthList = PageManager.getPages(this.testList, this.pageParams).getItems();
         this.pageParams.setPage(20);
-        List<Integer> fifthList = PageManager.getPages(this.testList, this.pageParams);
+        List<Integer> fifthList = PageManager.getPages(this.testList, this.pageParams).getItems();
 
         int[] firstArr = new int[5];
         int[] secondArr = new int[5];
