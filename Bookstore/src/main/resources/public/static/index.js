@@ -474,8 +474,6 @@ function attachEvents() {
                     }
 
                 }
-                // allDomElements.searchInput.value = '';
-                // allDomElements.searchAuthor.value = '';
             })
             .catch((error) => {
 
