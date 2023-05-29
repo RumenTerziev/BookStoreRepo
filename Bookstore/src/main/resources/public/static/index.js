@@ -55,8 +55,9 @@ function attachEvents() {
         allDomElements.prevPage.removeAttribute('disabled');
         allDomElements.nextPage.removeAttribute('disabled');
 
+        let url = checkURL();
 
-        fetch(`${BASE_URL}?page=${page}`)
+        fetch(url)
             .then((resp) => resp.json())
             .then((data) => {
 
@@ -96,6 +97,8 @@ function attachEvents() {
 
     function loadFirstPage() {
         page = 1;
+        allDomElements.searchInput.value = '';
+        allDomElements.searchAuthor.value = '';
         loadHandler();
     }
 
@@ -418,18 +421,7 @@ function attachEvents() {
 
         page = 1;
 
-        let bookTitle = allDomElements.searchInput.value;
-        let authorToSearch = allDomElements.searchAuthor.value;
 
-        let url;
-        if (bookTitle !== '' && authorToSearch !== '') {
-
-            url = `/api/bookstore?bookTitle=${encodeURIComponent(bookTitle)}&author=${encodeURIComponent(authorToSearch)}`;
-        } else if (bookTitle === '' && authorToSearch !== '') {
-            url = `/api/bookstore?author=${encodeURIComponent(authorToSearch)}`;
-        } else if (bookTitle !== '' && authorToSearch === '') {
-            url = `/api/bookstore?bookTitle=${encodeURIComponent(bookTitle)}`;
-        }
 
         if (event) {
             event.preventDefault();
@@ -442,8 +434,10 @@ function attachEvents() {
             }
         };
 
+        let url = checkURL();
 
-        fetch(`${url}&page=${page}`, requestOptions)
+
+        fetch(url, requestOptions)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(response.statusText);
@@ -455,15 +449,21 @@ function attachEvents() {
                 let values = Array.from(Object.values(data));
                 let [bookList, _totalRecords] = values;
 
+                let totalPages = Math.ceil(_totalRecords * 1.0 / 5);
+                allDomElements.pageNum.textContent = `Page ${page} of ${totalPages}`;
                 if (bookList.length === 0) {
                     alert('No matches with searched parameters!');
                 } else {
                     let array = [];
 
 
+                    let currentBookNum = 1;
                     for (const current of bookList) {
                         let {title, author, id} = current;
                         let currentTr = createTableRow(title, author);
+                        let tdNum = currentTr.querySelectorAll('td')[0];
+                        tdNum.textContent = `#${currentBookNum}`
+                        currentBookNum++;
                         currentTr.id = id;
                         array.push(currentTr);
                     }
@@ -474,8 +474,8 @@ function attachEvents() {
                     }
 
                 }
-                allDomElements.searchInput.value = '';
-                allDomElements.searchAuthor.value = '';
+                // allDomElements.searchInput.value = '';
+                // allDomElements.searchAuthor.value = '';
             })
             .catch((error) => {
 
@@ -490,7 +490,7 @@ function attachEvents() {
         if (page <= 0) {
             page = 1;
         }
-        loadHandler();
+            loadHandler();
     }
 
     function nextHandler() {
@@ -538,6 +538,27 @@ function attachEvents() {
 
         loadComments(id);
 
+    }
+
+    function checkURL() {
+
+        let bookTitle = allDomElements.searchInput.value;
+        let authorToSearch = allDomElements.searchAuthor.value;
+
+
+        let url;
+        if (bookTitle !== '' && authorToSearch !== '') {
+
+            url = `/api/bookstore?bookTitle=${encodeURIComponent(bookTitle)}&author=${encodeURIComponent(authorToSearch)}&page=${page}`;
+        } else if (bookTitle === '' && authorToSearch !== '') {
+            url = `/api/bookstore?author=${encodeURIComponent(authorToSearch)}&page=${page}`;
+        } else if (bookTitle !== '' && authorToSearch === '') {
+            url = `/api/bookstore?bookTitle=${encodeURIComponent(bookTitle)}&page=${page}`;
+        } else if (bookTitle === '' && authorToSearch === '') {
+            url = `/api/bookstore?page=${page}`;
+        }
+
+        return url;
     }
 
     function createTableRow(title, author) {
