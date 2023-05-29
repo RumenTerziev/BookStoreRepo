@@ -23,7 +23,6 @@ public class Controller {
 
 
     @Autowired
-    @Qualifier(COMMENTS_REPO)
     private CommentRepository commentsRepository;
 
 
