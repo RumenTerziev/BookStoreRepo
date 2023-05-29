@@ -1,4 +1,4 @@
-package bg.rumen.Bookstore.qualifiers;
+package bg.rumen.Bookstore.constants;
 
 public class BeanQualifiers {
     public static final String HARRY_POTTER_BOOK = "harryPotterBook";

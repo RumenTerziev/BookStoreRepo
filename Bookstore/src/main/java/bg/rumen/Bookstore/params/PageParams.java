@@ -11,7 +11,6 @@ public class PageParams {
     @Positive
     private Integer page;
 
-
     public Integer getLimit() {
         return LIMIT;
     }

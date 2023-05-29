@@ -1,5 +1,6 @@
 package bg.rumen.Bookstore.repository;
 
+import bg.rumen.Bookstore.constants.Profiles;
 import bg.rumen.Bookstore.exceptions.NoSuchBookWithIdException;
 import bg.rumen.Bookstore.interfaces.BookRepository;
 import bg.rumen.Bookstore.models.Book;
@@ -8,6 +9,7 @@ import bg.rumen.Bookstore.params.BookSearchParams;
 import bg.rumen.Bookstore.params.PageParams;
 import bg.rumen.Bookstore.models.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
+@Profile(Profiles.IN_MEM)
 public class InMemBookRepository implements BookRepository {
 
     @Autowired
