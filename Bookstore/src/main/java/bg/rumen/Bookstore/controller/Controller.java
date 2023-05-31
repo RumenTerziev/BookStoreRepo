@@ -8,10 +8,8 @@ import bg.rumen.Bookstore.params.BookSearchParams;
 import bg.rumen.Bookstore.models.Comment;
 import bg.rumen.Bookstore.params.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-import static bg.rumen.Bookstore.constants.BeanQualifiers.*;
 
 
 @RestController
