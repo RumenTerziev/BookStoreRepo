@@ -50,7 +50,22 @@ public class BookRepoJDBC implements BookRepository {
     @Override
     public void editBook(Book book) throws NoSuchBookWithIdException {
 
+        Integer searchedId = book.getId();
+        String newTitle = book.getTitle();
+        String newAuthor = book.getAuthor();
 
+        try {
+            PreparedStatement stmt = connection.prepareStatement("UPDATE `books`" +
+                    "SET `title` = ?, `author` = ?" +
+                    "WHERE `id` = ?");
+            stmt.setString(1, newTitle);
+            stmt.setString(2, newAuthor);
+            stmt.setInt(3, searchedId);
+            stmt.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 
     @Override
@@ -97,11 +112,45 @@ public class BookRepoJDBC implements BookRepository {
 
     @Override
     public Book getBookById(Integer id) throws NoSuchBookWithIdException {
-        return null;
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM `books`" +
+                    "WHERE `id` = ?" +
+                    "LIMIT ?, 5;");
+
+            stmt.setInt(1, id);
+
+            ResultSet rs = stmt.executeQuery();
+
+            Book book = null;
+            if (rs.next()) {
+                String title = rs.getString("title");
+                String author = rs.getString("author");
+                Integer bookId = rs.getInt("id");
+                book = new Book(title, author, bookId);
+            }
+
+            if (book == null) {
+                throw new NoSuchBookWithIdException(id);
+            }
+            return book;
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+
     }
 
     @Override
     public void deleteBookById(Integer id) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement("DELETE FROM `books`" +
+                    "WHERE `id` = ?");
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
 
     }
 }
