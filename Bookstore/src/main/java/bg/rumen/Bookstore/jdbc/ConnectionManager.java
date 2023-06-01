@@ -1,13 +1,16 @@
 package bg.rumen.Bookstore.jdbc;
 
+import org.springframework.stereotype.Service;
+
 import java.sql.*;
 import java.util.Properties;
 
+@Service
 public class ConnectionManager {
 
-    public static Connection getConnection() {
+    public Connection getConnection() {
 
-        Connection connection = null;
+        Connection connection;
         try {
           connection = doGetConnection();
         } catch (SQLException ex) {

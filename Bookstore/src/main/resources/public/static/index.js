@@ -228,13 +228,14 @@ function attachEvents() {
         };
 
 
-
-
         fetch(`${BASE_URL}/${searchedId}`, requestOptions)
             .then(() => {
                 let arr = Array.from(Object.values(allDomElements.tbody.querySelectorAll('tr')));
                 if (arr.length === 1) {
                     page--;
+                    if (page <= 0) {
+                        page = 1;
+                    }
                 }
                 loadHandler();
             })
@@ -422,7 +423,6 @@ function attachEvents() {
         page = 1;
 
 
-
         if (event) {
             event.preventDefault();
         }
@@ -488,7 +488,7 @@ function attachEvents() {
         if (page <= 0) {
             page = 1;
         }
-            loadHandler();
+        loadHandler();
     }
 
     function nextHandler() {
