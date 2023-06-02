@@ -12,7 +12,7 @@ public class ConnectionManager {
 
         Connection connection;
         try {
-          connection = doGetConnection();
+            connection = doGetConnection();
         } catch (SQLException ex) {
             throw new RuntimeException(ex.getMessage() );
         }

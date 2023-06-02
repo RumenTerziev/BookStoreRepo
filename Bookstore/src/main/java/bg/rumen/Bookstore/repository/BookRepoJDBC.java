@@ -96,29 +96,30 @@ public class BookRepoJDBC implements BookRepository {
 
             String searchedTitle = searchParams.getBookTitle();
             String searchedAuthor = searchParams.getAuthor();
-            String query = "SELECT * FROM `books` ";
-            String optOperator = "WHERE";
+            StringBuilder query = new StringBuilder(String.format("SELECT * FROM `books` WHERE 1 = 1%n"));
 
-            String countQuery = "SELECT COUNT(*) AS `count` FROM `books` ";
+            StringBuilder countQuery = new StringBuilder(String.format("SELECT COUNT(*) AS `count` FROM `books`%nWHERE 1 = 1%n"));
+
+            StringBuilder queryQueue = new StringBuilder();
 
             if (searchedTitle != null) {
-                String toAppend = String.format("%s `title` = '%s' ",optOperator, searchedTitle);
-                query = query.concat(toAppend);
-                countQuery = countQuery.concat(toAppend);
-                optOperator = "AND";
+                String toAppend = String.format(" AND `title` = '%s'%n ", searchedTitle);
+                queryQueue.append(toAppend);
             }
 
             if (searchedAuthor != null) {
-                String nextAppend = String.format("%s `author` = '%s' ", optOperator, searchedAuthor);
-                query = query.concat(nextAppend);
-                countQuery = countQuery.concat(nextAppend);
+                String nextAppend = String.format(" AND `author` = '%s'%n ", searchedAuthor);
+                queryQueue.append(nextAppend);
             }
 
-            query = query.concat(String.format("ORDER BY `id`%nLimit %d, 5;", offset));
-            countQuery = countQuery.concat(";");
+            query.append(queryQueue);
+            countQuery.append(queryQueue);
+
+            query.append(String.format(" ORDER BY `id`%nLimit %d, 5; ", offset));
+            countQuery.append(";");
 
 
-            PreparedStatement stmt = connection.prepareStatement(query);
+            PreparedStatement stmt = connection.prepareStatement(query.toString());
 
             ResultSet rs = stmt.executeQuery();
 
@@ -134,7 +135,7 @@ public class BookRepoJDBC implements BookRepository {
             rs.close();
             stmt.close();
 
-            PreparedStatement newStmt = connection.prepareStatement(countQuery);
+            PreparedStatement newStmt = connection.prepareStatement(countQuery.toString());
 
             ResultSet newSet = newStmt.executeQuery();
 

@@ -319,12 +319,39 @@ function attachEvents() {
         if (event) {
             event.preventDefault();
         }
-        let tdComments = document.createElement('td');
-        let ul = document.createElement('ul');
-        let span = document.createElement('span');
+
+        commentsPage = allCommentPagesObject[id].page;
 
         let allTrs = Array.from(document.getElementsByTagName('tr'));
         let searchedTr = allTrs.find(tr => tr.id === id);
+        let tds = Array.from(searchedTr.querySelectorAll('td'));
+
+        let tdComments;
+        if (tds.length < 6) {
+           tdComments = document.createElement('td');
+        } else {
+            tdComments = tds[5];
+            console.log(tdComments);
+            let searchedUl = tdComments.querySelector('ul');
+            let allLis = Array.from(searchedUl.querySelectorAll('li'));
+            console.log(allLis);
+            if (allLis.length <= 2) {
+                allCommentPagesObject[id].page--;
+                commentsPage--;
+            }
+        }
+
+
+        if (allCommentPagesObject[id].page <= 0) {
+            allCommentPagesObject[id].page = 1;
+        }
+
+        tdComments.innerHTML = '';
+
+        let ul = document.createElement('ul');
+        let span = document.createElement('span');
+
+
 
         let reqOptions = {
             method: "GET",
@@ -333,11 +360,10 @@ function attachEvents() {
             }
         }
 
-        commentsPage = allCommentPagesObject[id].page;
-
         fetch(`${COMMENTS_URL}/${id}?page=${allCommentPagesObject[id].page}`, reqOptions)
             .then((resp) => resp.json())
             .then((data) => {
+
 
                 let values = Array.from(Object.values(data));
                 let [commentList, totalRecords] = values;
@@ -366,8 +392,7 @@ function attachEvents() {
                             commentRecords: allCommentsRecords
                         };
                         searchedTr.id = bookId;
-                        buttonPrevComment.id = bookId;
-                        buttonNextComment.id = bookId;
+                        tdComments.id = bookId;
                         let li = document.createElement('li');
                         li.textContent = comment;
                         li.id = commentId;
@@ -392,7 +417,9 @@ function attachEvents() {
 
         let commentId = this.parentNode.id;
         let td = this.parentNode.parentNode.parentNode;
-        let bookId = td.parentNode.id;
+        let tr = td.parentNode;
+        let bookId = tr.id;
+
 
 
         let requestOptions = {
@@ -403,9 +430,10 @@ function attachEvents() {
         };
 
 
+
         fetch(`${COMMENTS_URL}/${commentId}`, requestOptions)
             .then(() => {
-                td.remove();
+
                 loadComments(bookId);
             })
             .catch((err) => {
@@ -447,9 +475,9 @@ function attachEvents() {
             .then(data => {
 
                 let values = Array.from(Object.values(data));
-                let [bookList, _totalRecords] = values;
-
-                let totalPages = Math.ceil(_totalRecords * 1.0 / 5);
+                let [bookList, totalRecords] = values;
+                let totalPages = Math.ceil(totalRecords * 1.0 / 5);
+                allRecords = totalRecords;
                 allDomElements.pageNum.textContent = `Page ${page} of ${totalPages}`;
                 if (bookList.length === 0) {
                     alert('No matches with searched parameters!');
@@ -493,10 +521,9 @@ function attachEvents() {
 
     function nextHandler() {
 
-        if (page * 5 >= allRecords) {
-            page--;
+        if (Math.ceil(allRecords * 1.0 / 5) > page) {
+            page++;
         }
-        page++;
         loadHandler();
 
     }
@@ -506,16 +533,16 @@ function attachEvents() {
         if (event) {
             event.preventDefault();
         }
-        let id = this.id;
+
         let td = this.parentNode.parentNode.parentNode;
-        td.remove();
+        let tr = td.parentNode;
+        let id = tr.id;
 
         allCommentPagesObject[id].page--;
 
         if (allCommentPagesObject[id].page <= 0) {
             allCommentPagesObject[id].page = 1;
         }
-
         loadComments(id);
 
     }
@@ -525,14 +552,14 @@ function attachEvents() {
         if (event) {
             event.preventDefault();
         }
-        let id = this.id;
-        let td = this.parentNode.parentNode.parentNode;
 
-        if (allCommentPagesObject[id].page * 5 >= allCommentPagesObject[id].commentRecords) {
-            allCommentPagesObject[id].page--;
+        let td = this.parentNode.parentNode.parentNode;
+        let tr = td.parentNode;
+        let id = tr.id;
+
+        if (Math.ceil(allCommentPagesObject[id].commentRecords * 1.0 / 5) > allCommentPagesObject[id].page) {
+            allCommentPagesObject[id].page++;
         }
-        allCommentPagesObject[id].page++;
-        td.remove();
 
         loadComments(id);
 
