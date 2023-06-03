@@ -24,6 +24,9 @@ public class BookRepoJDBC implements BookRepository {
     @Autowired
     private ConnectionManager connectionManager;
 
+    @Autowired
+    private CommentRepoJDBC comments;
+
     @Override
     public void addBook(Book book) {
         Connection connection = this.connectionManager.getConnection();
@@ -208,14 +211,9 @@ public class BookRepoJDBC implements BookRepository {
     @Override
     public void deleteBookById(Integer id) {
         Connection connection = this.connectionManager.getConnection();
-
         try {
 
-            PreparedStatement statement = connection.prepareStatement("DELETE FROM `comments`" +
-                    "WHERE `book_id`= ?");
-            statement.setInt(1, id);
-            statement.executeUpdate();
-            statement.close();
+            this.comments.removeAllComments(id);
 
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM `books`" +
                     "WHERE `id` = ?");

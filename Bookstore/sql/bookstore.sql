@@ -28,3 +28,7 @@ VALUES ('Game Of Thrones', 'George R.R. Martin'),
         ('It', 'Stephen King'),
         ('The Boogeyman', 'Stephen King'),
         ('Fairy Tale', 'Stephen King');
+
+
+INSERT INTO `comments`(`comment`, `book_id`)
+VALUES ('An awesome book!', 1);

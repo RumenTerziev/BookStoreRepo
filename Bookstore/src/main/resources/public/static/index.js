@@ -331,26 +331,12 @@ function attachEvents() {
            tdComments = document.createElement('td');
         } else {
             tdComments = tds[5];
-            console.log(tdComments);
-            let searchedUl = tdComments.querySelector('ul');
-            let allLis = Array.from(searchedUl.querySelectorAll('li'));
-            console.log(allLis);
-            if (allLis.length <= 2) {
-                allCommentPagesObject[id].page--;
-                commentsPage--;
-            }
-        }
-
-
-        if (allCommentPagesObject[id].page <= 0) {
-            allCommentPagesObject[id].page = 1;
         }
 
         tdComments.innerHTML = '';
 
         let ul = document.createElement('ul');
         let span = document.createElement('span');
-
 
 
         let reqOptions = {
@@ -421,7 +407,6 @@ function attachEvents() {
         let bookId = tr.id;
 
 
-
         let requestOptions = {
             method: "DELETE",
             headers: {
@@ -431,9 +416,16 @@ function attachEvents() {
 
 
 
+
         fetch(`${COMMENTS_URL}/${commentId}`, requestOptions)
             .then(() => {
-
+                allCommentPagesObject[bookId].commentRecords--;
+                if (allCommentPagesObject[bookId].page > Math.ceil(allCommentPagesObject[bookId].commentRecords / 5)) {
+                    allCommentPagesObject[bookId].page--;
+                }
+                if (allCommentPagesObject[bookId].page <= 0) {
+                    allCommentPagesObject[bookId].page = 1;
+                }
                 loadComments(bookId);
             })
             .catch((err) => {

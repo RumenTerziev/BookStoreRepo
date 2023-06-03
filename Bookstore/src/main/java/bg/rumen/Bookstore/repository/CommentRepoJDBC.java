@@ -143,14 +143,14 @@ public class CommentRepoJDBC implements CommentRepository {
     }
 
     @Override
-    public void removeAllComments(Integer id) {
+    public void removeAllComments(Integer bookId) {
         Connection connection = this.connectionManager.getConnection();
 
         try {
 
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM `comments`" +
                     "WHERE `book_id` = ?");
-            stmt.setInt(1, id);
+            stmt.setInt(1, bookId);
 
             stmt.executeUpdate();
             stmt.close();

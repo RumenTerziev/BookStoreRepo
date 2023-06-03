@@ -1,12 +1,18 @@
 package bg.rumen.Bookstore.jdbc;
 
+import bg.rumen.Bookstore.constants.Profiles;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
 import java.util.Properties;
 
 @Service
+@Profile(Profiles.BASIC_JDBC)
 public class ConnectionManager {
+    @Autowired
+    private UserJDBC user;
 
     public Connection getConnection() {
 
@@ -14,18 +20,18 @@ public class ConnectionManager {
         try {
             connection = doGetConnection();
         } catch (SQLException ex) {
-            throw new RuntimeException(ex.getMessage() );
+            throw new RuntimeException(ex.getMessage());
         }
         return connection;
     }
 
 
-    private static Connection doGetConnection() throws SQLException {
+    private Connection doGetConnection() throws SQLException {
 
         Properties connectionProps = new Properties();
-        connectionProps.put("user", UserJDBC.getUser());
-        connectionProps.put("password", UserJDBC.getPassword());
+        connectionProps.put("user", this.user.getUsername());
+        connectionProps.put("password", this.user.getPassword());
 
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/bookstore", connectionProps);
+        return DriverManager.getConnection(this.user.getUrl(), connectionProps);
     }
 }
