@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 @Getter
 @Configuration
 @Profile(Profiles.BASIC_JDBC)
-public class UserJDBC {
+public class JdbcProps {
     @Value("${user}")
     private String username;
     @Value("${pass}")

@@ -12,7 +12,7 @@ import java.util.Properties;
 @Profile(Profiles.BASIC_JDBC)
 public class ConnectionManager {
     @Autowired
-    private UserJDBC user;
+    private JdbcProps user;
 
     public Connection getConnection() {
 
