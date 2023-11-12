@@ -10,8 +10,6 @@ import bg.rumen.bookstore.params.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
-
 @RestController
 @RequestMapping("/api/bookstore")
 public class Controller {

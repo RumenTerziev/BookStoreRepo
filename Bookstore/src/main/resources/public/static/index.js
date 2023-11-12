@@ -1,7 +1,25 @@
 window.addEventListener('load', attachEvents)
+window.onhashchange = function () {
+
+    let views = {
+        "#/view1": {
+            file: "/api/bookstore/comments",
+            model: {
+
+            }
+        }
+    }
+
+    let view = views[window.location.hash];
+    fetch(view.file)
+        .then((resp) => resp.text())
+        .then(data => document.getElementsByTagName("html")[0].innerHTML = data)
+        .catch((err) => {
+            console.error(err);
+        });
+}
 
 function attachEvents() {
-
 
     const allDomElements = {
         loadButton: document.getElementById('loadBooks'),
@@ -328,7 +346,7 @@ function attachEvents() {
 
         let tdComments;
         if (tds.length < 6) {
-           tdComments = document.createElement('td');
+            tdComments = document.createElement('td');
         } else {
             tdComments = tds[5];
         }
@@ -413,8 +431,6 @@ function attachEvents() {
                 "Content-Type": "application/json"
             }
         };
-
-
 
 
         fetch(`${COMMENTS_URL}/${commentId}`, requestOptions)
